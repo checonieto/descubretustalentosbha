@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descubre Tus Talentos y Tu Camino Profesional | Big Horn Academy</title>
+<style>
+:root{--navy:#0b1f4b;--navy2:#16336e;--ink:#05070d;--mist:#eef2fa;--line:#cfd8ec;--ok:#1f7a4d;--bad:#a12626}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,"Times New Roman",serif;background:var(--mist);color:var(--ink);line-height:1.55}
+h1,h2,h3,button,.ui{font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif}
+header{background:var(--navy);color:#fff;padding:12px 18px;border-bottom:4px solid var(--ink)}
+.top{display:flex;align-items:center;gap:12px;max-width:980px;margin:auto;flex-wrap:wrap}
+.top img.logo{height:50px;background:#fff;border-radius:8px;padding:3px}
+.top h1{font-size:1.05rem;margin:0;flex:1;min-width:170px}
+.xp,.pc{background:var(--ink);padding:6px 12px;border-radius:20px;font:700 .85rem "Trebuchet MS",sans-serif}
+.pc{background:#fff;color:var(--navy)}
+main{max-width:980px;margin:auto;padding:14px 12px 50px}
+.hero{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;margin:6px 0 10px}
+.hero p{margin:0;flex:1;min-width:200px;color:var(--navy);font-weight:700}
+.legend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.lg{font:700 .75rem "Trebuchet MS",sans-serif;border:2px solid var(--navy);border-radius:16px;padding:3px 10px;background:#fff;color:var(--navy)}
+.lg.ok{background:var(--navy);color:#fff}
+.board{position:relative;background:#fff;border:3px solid var(--navy);border-radius:18px;overflow:hidden;background-image:radial-gradient(#0b1f4b14 1.5px,transparent 1.5px);background-size:22px 22px}
+#nodes{position:relative}
+.node{position:absolute;width:var(--d);height:var(--d);transform:translate(-50%,-50%);border-radius:50%;border:4px solid var(--navy);background:#fff;color:var(--navy);font:800 .95rem "Trebuchet MS",sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.node .lbl{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:7px;width:104px;text-align:center;font:600 .66rem/1.2 "Trebuchet MS",sans-serif;color:#2b3550;pointer-events:none}
+.node.quiz{border-color:var(--ink);border-style:double;border-width:6px}
+.node.done{background:var(--navy);color:#fff}
+.node.cur{box-shadow:0 0 0 7px #0b1f4b30;animation:pulse 1.8s infinite}
+.node.lock{border-color:#aab4cf;color:#aab4cf;background:#f1f4fa}
+.node:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@keyframes pulse{50%{box-shadow:0 0 0 13px #0b1f4b10}}
+.fig{position:absolute;z-index:6;width:58px;height:58px;transform:translate(-50%,-50%);pointer-events:none;transition:left var(--hd,.45s) ease-in-out,top var(--hd,.45s) ease-in-out}
+.fig .in{width:100%;height:100%;font-size:42px;line-height:58px;text-align:center;filter:drop-shadow(0 4px 3px #0005)}
+.fig img{width:100%;height:100%;object-fit:contain;display:block}
+.fig .in.hop{animation:hop var(--hd,.45s) ease-in-out}
+@keyframes hop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-34px) scale(1.18) rotate(-6deg)}100%{transform:translateY(0) scale(1)}}
+.below{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:18px;margin-top:18px}
+.below h2{margin:0 0 10px;color:var(--navy);font-size:1.15rem}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px}
+.badge{text-align:center;border:2px solid var(--line);border-radius:50%;aspect-ratio:1;padding:10px;font:.74rem "Trebuchet MS",sans-serif;color:#7a86a5;background:#f4f6fb;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.badge .i{font-size:1.9rem;filter:grayscale(1);opacity:.4}
+.badge.got{border-color:var(--navy);background:var(--navy);color:#fff}
+.badge.got .i{filter:none;opacity:1}
+.overlay{position:fixed;inset:0;background:#05070dcc;display:none;overflow:auto;z-index:40;padding:18px 10px}
+.overlay.on{display:block}
+.panel{max-width:760px;margin:auto;background:#fff;border-radius:18px;border:3px solid var(--navy);padding:22px 20px;position:relative;outline:0}
+.xbtn{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:2px solid var(--navy);background:#fff;color:var(--navy);font-size:1rem;cursor:pointer}
+.panel h2{margin:0 40px 6px 0;color:var(--navy);font-size:1.25rem}
+.sub{margin:0 0 14px;color:#334}
+.video{aspect-ratio:16/9;background:var(--ink);border-radius:10px;overflow:hidden;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px}
+.video iframe{width:100%;height:100%;border:0}
+.bicente{display:flex;gap:12px;align-items:center;background:var(--mist);border-left:6px solid var(--navy);padding:10px 14px;border-radius:8px;margin:12px 0;font-style:italic}
+.bicente .av{font-size:2rem}
+.bicente .av img{width:48px;height:48px;object-fit:contain}
+.card h3{margin:0 0 4px;color:var(--navy);font-size:1.1rem}
+.tag{display:inline-block;background:var(--ink);color:#fff;font:700 .72rem "Trebuchet MS",sans-serif;padding:2px 10px;border-radius:12px;margin:0 4px 8px 0}
+.card p{margin:6px 0}
+label.f{display:block;font:700 .85rem "Trebuchet MS",sans-serif;margin:12px 0 4px;color:var(--navy)}
+input[type=text],textarea,select{width:100%;padding:9px 10px;border:2px solid var(--line);border-radius:8px;font:1rem Georgia,serif;background:#fff}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:3px solid var(--navy2);outline-offset:1px}
+textarea{min-height:70px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:18px;padding:5px 12px;font:.82rem "Trebuchet MS",sans-serif;cursor:pointer}
+.chip.sel{background:var(--navy);color:#fff}
+.chip.static{cursor:default;border-color:var(--line);color:#445}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:24px;padding:11px 24px;font-weight:700;cursor:pointer;margin-top:14px;font-size:.95rem}
+.btn:hover{background:var(--ink)}
+.btn.alt{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.msg{font:.85rem "Trebuchet MS",sans-serif;margin-top:8px;color:var(--bad);min-height:1em}
+.okmsg{color:var(--ok)}
+.count{font:800 2.4rem "Trebuchet MS",sans-serif;color:var(--navy);margin:8px 0}
+.q{margin:16px 0;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.q p{font-weight:700;margin:0 0 6px}
+.opt{display:block;padding:8px 10px;border:2px solid var(--line);border-radius:10px;margin:5px 0;cursor:pointer}
+.opt.right{border-color:var(--ok);background:#eaf7f0}
+.opt.wrong{border-color:var(--bad);background:#fbeded}
+.cert{border:6px double var(--navy);padding:26px 16px;text-align:center;background:#fff;margin-top:14px}
+.cert h2{font-size:1.6rem;color:var(--navy);margin:6px 0}
+.cert img{height:70px}
+.win{text-align:center;padding:10px 0}
+.win .big{font-size:4rem}
+.pop{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:30px;font:700 .95rem "Trebuchet MS",sans-serif;transition:transform .4s;z-index:60;text-align:center;max-width:90vw}
+.pop.show{transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{header,main,.xbtn,.noprint,.pop{display:none!important}.overlay{position:static!important;display:block!important;background:none;padding:0}.panel{border:0}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <img class="logo" src="logobha.jpg" alt="Big Horn Academy" onerror="this.style.display='none'">
+    <h1>Descubre Tus Talentos y Tu Camino Profesional</h1>
+    <div class="pc" id="pct"></div>
+    <div class="xp" id="xp"></div>
+  </div>
+</header>
+<main>
+  <div class="hero"><p id="lead"></p><button class="btn" style="margin:0" data-go>Continuar mi camino</button></div>
+  <div class="legend" id="legend"></div>
+  <div class="board" id="board">
+    <div id="nodes"></div>
+    <div class="fig" id="fig"><div class="in"><img src="figurinbha.jpg" alt="Bicente" onerror="this.replaceWith(document.createTextNode('🦬'))"></div></div>
+  </div>
+  <section class="below"><h2>🏅 Tus insignias</h2><div class="badges" id="badges"></div>
+    <button class="btn alt" data-reset>Reiniciar mi progreso</button></section>
+</main>
+<div class="overlay" id="ov"><div class="panel" id="panel" tabindex="-1"><button class="xbtn" data-close aria-label="Cerrar">✕</button><div id="pbody"></div></div></div>
+<div class="pop" id="pop" role="status"></div>
+
+<script>
+/* ===== VIDEOS: pega aquí los links de YouTube (déjalos vacíos para mostrar el espacio reservado) ===== */
+const VIDEOS = { 1:"", 2:"", 3:"", 4:"", final:"" };
+
+/* ===== CONTENIDO ===== */
+// k: t=texto corto, a=párrafo, s=lista, m=selección múltiple, c=casilla, x=reto de 3 segundos
+const T=["Adaptable","Buen oyente","Constante","Creativo","Empático","Minucioso","Organizado","Resolutivo"];
+const AREAS=["Administración y negocios","Servicios a la comunidad (salud, educación, etc.)","Oficios técnicos y construcción","Tecnología e informática","Producción y manufactura","Ventas y atención al cliente","Agricultura y trabajo al aire libre","Transporte y logística","Arte, comunicación y diseño"];
+const C=[
+{n:1,t:"Conoce Tus Talentos",ic:"🎒",badge:"Mochila Abierta",
+ vid:"Bicente te da la bienvenida a Big Horn Academy.",
+ say:"Antes de decidir a dónde vas, necesitas saber qué llevas en tu equipaje.",
+ cards:[
+ {id:"1.1",t:"El Retrato de Tu Mochila",tp:"Reto de Autoconocimiento",d:"Ejercicio de entrada: ¿quién eres hoy?",f:[
+  {k:"a",l:"5 palabras que te describan",p:"Ej. leal, curioso, paciente..."},
+  {k:"a",l:"3 pasatiempos o intereses que disfrutas"},
+  {k:"a",l:"3 trabajos, oficios o tareas que has hecho (con o sin paga)"},
+  {k:"t",l:"Un valor que jamás negociarías",p:"Ej. honestidad, familia, fe"}]},
+ {id:"1.2",t:"El Poder de Tus Logros",tp:"Desafío de Extracción de Talentos",d:"Elige 3 logros de los que te sientes orgulloso (académicos, capacitaciones o personales) e identifica el talento que te ayudó a lograrlos.",chips:T,f:[
+  {k:"t",l:"Logro 1"},{k:"t",l:"Talento que lo hizo posible"},
+  {k:"t",l:"Logro 2"},{k:"t",l:"Talento que lo hizo posible"},
+  {k:"t",l:"Logro 3"},{k:"t",l:"Talento que lo hizo posible"}]},
+ {id:"1.3",t:"Yo Soy, Yo Tengo, Yo Puedo",tp:"Afirmación y Expresión Oral",d:"Convierte tus talentos en frases firmes y enérgicas.",f:[
+  {k:"t",l:"Yo soy...",p:"Yo soy una persona paciente y empática"},
+  {k:"t",l:"Yo tengo...",p:"Yo tengo facilidad para organizar proyectos y liderar"},
+  {k:"t",l:"Yo puedo...",p:"Yo puedo resolver problemas con calma bajo presión"},
+  {k:"c",l:"Las repetí en voz alta 3 veces, frente al espejo o a un compañero"}]},
+ {id:"1.4",t:"¡Reto Relámpago! Yo en 3 Segundos",tp:"Micro-Reto de Velocidad y Confianza",d:"Tienes 3 segundos: ¿cuál es tu súper talento principal?",f:[{k:"x",l:"Mi súper talento es...",p:"¡Resolver problemas! ¡Escuchar con empatía!"}]}],
+ quiz:[
+ {q:"¿Cuál es el objetivo principal de analizar tus logros pasados?",o:["Contar cuántos diplomas tienes guardados.","Descubrir y extraer los talentos y cualidades que hicieron posible esos logros.","Demostrar a los demás que eres superior."],a:1},
+ {q:"Según Bicente, las frases «Yo soy, Tengo, Puedo» deben pronunciarse:",o:["Con timidez para no parecer presumido.","Solo en exámenes formales.","En voz alta y con firmeza, creyendo que son ciertas."],a:2}]},
+{n:2,t:"Elige Tu Camino Profesional",ic:"🧭",badge:"Brújula Firme",
+ vid:"Bicente te ayuda a explorar ocupaciones y fijar metas.",
+ say:"Un bisonte no corre hacia cualquier lado cuando hay tormenta; camina derecho hacia ella, porque sabe que así se cruza más rápido.",
+ cards:[
+ {id:"2.1",t:"Mapa de Exploración de Ocupaciones",tp:"Selección Estratégica",d:"Marca las 2 o 3 áreas laborales que más te atraigan.",f:[{k:"m",l:"Áreas que me atraen",o:AREAS,min:2,max:3}]},
+ {id:"2.2",t:"Ficha de Investigación de Tu Profesión Meta",tp:"Misión de Investigación",d:"Elige un oficio o profesión e investiga.",f:[
+  {k:"t",l:"Profesión que investigo"},
+  {k:"a",l:"1. ¿Cuáles son las actividades del día a día?"},
+  {k:"a",l:"2. ¿Por qué te interesa este campo?"},
+  {k:"t",l:"3. ¿Está en crecimiento, estable o en declive en tu zona?"},
+  {k:"t",l:"4. ¿Cuál es el rango salarial aproximado?"},
+  {k:"a",l:"5. ¿Qué estudios, certificaciones o experiencias se requieren?"}]},
+ {id:"2.3",t:"La Entrevista Informativa",tp:"Rol Play / Acción Práctica",d:"Imagina que entrevistas a alguien del área. Escribe tus 3 preguntas clave.",f:[
+  {k:"t",l:"Pregunta 1",p:"¿Cómo es un día típico en tu trabajo?"},
+  {k:"t",l:"Pregunta 2",p:"¿Qué habilidades marcan la diferencia entre alguien bueno y alguien excelente?"},
+  {k:"t",l:"Pregunta 3",p:"¿Qué consejo le darías a alguien que apenas empieza?"}]},
+ {id:"2.4",t:"La Brújula de Bicente",tp:"Reto de Planeación",d:"Define tus horizontes con precisión.",f:[
+  {k:"a",l:"Meta a corto plazo (próximos 6 a 12 meses)"},
+  {k:"a",l:"Meta a largo plazo (3 a 5 años)"}]}],
+ quiz:[
+ {q:"¿Qué es una entrevista informativa?",o:["Una entrevista de trabajo formal para conseguir empleo de inmediato.","Una conversación con un profesional para aprender de su experiencia y conocer el campo.","Un examen oral evaluado por Bicente."],a:1},
+ {q:"¿Por qué es crucial establecer metas específicas a corto y largo plazo?",o:["Porque una meta concreta tiene más fuerza de atracción y evita perder tiempo dando vueltas.","Porque es obligatorio para graduarse del colegio.","Para cambiar de opinión todos los días."],a:0}]},
+{n:3,t:"Lo Que Ya Tienes vs. Lo Que Necesitas",ic:"🌊",badge:"Cruzando el Río",
+ vid:"Bicente te acompaña a hacer tu inventario de habilidades.",
+ say:"No te avergüences de lo que todavía no sabes hacer. Yo tampoco nací sabiendo cruzar el río: lo aprendí observando a los que iban adelante.",
+ cards:[
+ {id:"3.1",t:"Inventario Honestísimo de Habilidades",tp:"Tarjeta Diagnóstico",d:"Para tu profesión elegida, anota un requisito clave.",f:[
+  {k:"t",l:"Habilidad o requisito",p:"Excel avanzado, Primeros Auxilios, licencia de conducir..."},
+  {k:"s",l:"¿Ya la tengo?",o:["Sí","No"]},
+  {k:"a",l:"Cómo la voy a desarrollar"},
+  {k:"t",l:"Fecha meta",p:"Ej. diciembre 2026"}]},
+ {id:"3.2",t:"Tu Plan de Acción Semanal",tp:"Reto de Ejecución Inmediata",d:"El paso de los bisontes: elige una habilidad clave que te falta.",f:[
+  {k:"t",l:"Habilidad a desarrollar"},
+  {k:"a",l:"Acción concreta esta semana",p:"Un curso, un tutorial, practicar una técnica"},
+  {k:"t",l:"¿Quién me puede ayudar?"}]},
+ {id:"3.3",t:"Yo Puedo Aprender",tp:"Cambio de Mentalidad",d:"Cambia «No sé hacer esto» por «Todavía no lo sé hacer, pero lo voy a aprender haciendo [acción]».",f:[
+  {k:"t",l:"Compromiso de aprendizaje 1",p:"Todavía no sé..., pero lo voy a aprender haciendo..."},
+  {k:"t",l:"Compromiso de aprendizaje 2"}]}],
+ quiz:[
+ {q:"¿Cuál es el objetivo de identificar la brecha entre lo que tienes y lo que necesitas?",o:["Demostrar que no estás capacitado y abandonar.","Tener un mapa claro para trazar acciones concretas y cerrar la brecha paso a paso.","Sentir culpa por no saberlo todo desde el principio."],a:1},
+ {q:"¿Cómo se transforma la frase «No sé hacer esto»?",o:["«Nunca voy a poder hacerlo».","«Todavía no lo sé hacer, pero lo voy a aprender haciendo».","«Que lo haga otra persona»."],a:1}]},
+{n:4,t:"Construye Tu Red de Contactos",ic:"🦬",badge:"Manada Unida",
+ vid:"Bicente te presenta el poder de la manada.",
+ say:"Tu red de contactos es tu manada: la gente que te cuida las espaldas mientras avanzas.",
+ cards:[
+ {id:"4.1",t:"Mapeo de la Manada",tp:"Lluvia de Ideas de Redes",d:"Anota al menos 1 o 2 personas en cada categoría.",f:[
+  {k:"t",l:"Familiares y parientes"},{k:"t",l:"Amigos actuales y del pasado"},
+  {k:"t",l:"Compañeros de trabajo, jefes o expatrones"},
+  {k:"t",l:"Maestros, mentores o líderes comunitarios"},
+  {k:"t",l:"Personas de hobbies, deportes o actividades"}]},
+ {id:"4.2",t:"Clasificador A / B / C",tp:"Organización Estratégica",d:"Asigna una prioridad a tus contactos.",f:[
+  {k:"t",l:"Prioridad A: quienes te pueden ayudar directamente"},
+  {k:"t",l:"Prioridad B: quienes tal vez puedan ayudarte"},
+  {k:"t",l:"Prioridad C: quienes te pueden conectar con alguien más"}]},
+ {id:"4.3",t:"Las 3 Preguntas de Oro",tp:"Guía para Conversaciones",d:"1) ¿Sabes de alguna vacante o oportunidad en el campo que me interesa? 2) ¿Conoces a alguien más con quien valga la pena que hable? 3) ¿Puedo mantenerte al tanto de cómo me va para seguir en contacto?",f:[
+  {k:"t",l:"¿A quién le haré estas 3 preguntas primero?"},
+  {k:"c",l:"Me aprendí las 3 preguntas para cada interacción profesional"}]},
+ {id:"4.4",t:"El Mensaje de Gratitud",tp:"Misión de Seguimiento",d:"Escribe una plantilla breve para enviar después de hablar con un contacto.",f:[
+  {k:"a",l:"Un agradecimiento sincero por su tiempo"},
+  {k:"a",l:"Algo específico que conversaron"},
+  {k:"a",l:"Un paso siguiente sugerido o promesa de actualización"}]}],
+ quiz:[
+ {q:"¿Qué representan los contactos con clasificación «C»?",o:["Contactos que debes descartar de inmediato.","Personas que tal vez no están en tu área laboral, pero te pueden conectar con alguien más.","Contactos prioritarios a los que debes llamar primero."],a:1},
+ {q:"¿Por qué es fundamental enviar un mensaje de agradecimiento tras hablar con un contacto?",o:["Porque demuestra educación, genera un impacto positivo y hace que te recuerden con cariño.","Porque es obligatorio por ley.","Para exigirles que te den trabajo rápido."],a:0}]}
+];
+const FINAL_SAY="¡Lo lograste! Ya recorriste las cuatro etapas: conoces tus talentos, elegiste una dirección, identificaste lo que necesitas y empezaste a construir tu manada. El camino profesional no es una línea recta, es como cruzar la pradera. ¡Gracias por caminar este tramo conmigo!";
+
+/* ===== ESTADO ===== */
+const KEY="bha_descubre_talentos_v2";
+let S={cards:{},quiz:{},intro:{},grad:false,name:""};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const XPI=5,XPC=10,XPQ=25,XPG=50;
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const $=id=>document.getElementById(id);
+const quizOk=n=>!!(S.quiz[n]&&S.quiz[n].passed);
+
+/* ===== ESTACIONES ===== */
+const ST=[];
+C.forEach(ch=>{
+  ST.push({t:"intro",n:ch.n,lb:"Bienvenida",sym:ch.ic});
+  ch.cards.forEach(c=>ST.push({t:"card",n:ch.n,card:c,id:c.id,lb:c.t,sym:c.id}));
+  ST.push({t:"quiz",n:ch.n,lb:"Quiz del capítulo "+ch.n,sym:"❓"});
+});
+ST.push({t:"final",lb:"Graduación",sym:"🎓"});
+const isDone=s=>s.t==="intro"?!!S.intro[s.n]:s.t==="card"?!!(S.cards[s.id]&&S.cards[s.id].done):s.t==="quiz"?quizOk(s.n):!!S.grad;
+const firstOpen=()=>{const i=ST.findIndex(s=>!isDone(s));return i<0?ST.length-1:i};
+const xp=()=>ST.reduce((a,s)=>a+(isDone(s)?({intro:XPI,card:XPC,quiz:XPQ,final:XPG})[s.t]:0),0);
+
+function badgeList(){
+  const first=Object.values(S.cards).some(c=>c.done);
+  const perfect=Object.values(S.quiz).some(q=>q.passed&&q.tries===1);
+  const L=[{i:"👣",n:"Primer Paso",g:first}];
+  C.forEach(c=>L.push({i:c.ic,n:c.badge,g:quizOk(c.n)}));
+  L.push({i:"🎯",n:"Sin Errores",g:perfect},{i:"🎓",n:"Bisonte Graduado",g:S.grad});
+  return L;
+}
+function pop(t){const p=$("pop");p.textContent=t;p.classList.add("show");clearTimeout(pop.t);pop.t=setTimeout(()=>p.classList.remove("show"),2600)}
+
+/* ===== MAPA ===== */
+let figIdx=firstOpen(),G=null;
+function geo(){
+  const w=$("board").clientWidth,cols=w<620?3:5,d=w<620?58:70,padX=Math.max(d/2+18,w*.1),rowH=w<620?122:136;
+  const pos=ST.map((s,i)=>{const r=Math.floor(i/cols),c0=i%cols,c=r%2?cols-1-c0:c0;return{x:padX+c*(w-2*padX)/(cols-1),y:76+r*rowH}});
+  return{pos,d,w,h:76+(Math.ceil(ST.length/cols)-1)*rowH+84};
+}
+function placeFig(anim){
+  const f=$("fig"),p=G.pos[figIdx];
+  if(!anim)f.style.transition="none";
+  f.style.left=p.x+"px";f.style.top=(p.y-G.d/2-26)+"px";
+  if(!anim){void f.offsetWidth;f.style.transition=""}
+}
+function drawMap(){
+  G=geo();const cur=firstOpen(),n=$("nodes");
+  n.style.height=G.h+"px";n.style.setProperty("--d",G.d+"px");
+  let svg=`<svg width="${G.w}" height="${G.h}" style="position:absolute;left:0;top:0" aria-hidden="true">`;
+  for(let i=0;i<ST.length-1;i++){const a=G.pos[i],b=G.pos[i+1],dn=isDone(ST[i]);
+    svg+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${dn?"#0b1f4b":"#b7c1da"}" stroke-width="${dn?7:5}" stroke-linecap="round" ${dn?"":'stroke-dasharray="1 13"'}/>`}
+  n.innerHTML=svg+"</svg>"+ST.map((s,i)=>{
+    const st=isDone(s)?"done":i===cur?"cur":i>cur?"lock":"";
+    return `<button class="node ${s.t==="quiz"?"quiz":""} ${st}" data-s="${i}" style="left:${G.pos[i].x}px;top:${G.pos[i].y}px" aria-label="${esc(s.lb)}${st==="lock"?" (bloqueada)":""}">${s.sym}<span class="lbl">${esc(s.lb)}</span></button>`}).join("");
+  placeFig(false);
+}
+function hopTo(t,cb){
+  if(figIdx===t){cb&&cb();return}
+  const f=$("fig"),k=Math.abs(t-figIdx),few=k<=3,ms=few?450:750;
+  figIdx+=few?(t>figIdx?1:-1):(t-figIdx);
+  f.style.setProperty("--hd",ms+"ms");placeFig(true);
+  const inn=f.firstElementChild;inn.classList.remove("hop");void inn.offsetWidth;inn.classList.add("hop");
+  f.scrollIntoView({block:"center",behavior:"smooth"});
+  setTimeout(()=>hopTo(t,cb),ms+40);
+}
+function head(){
+  const d=ST.filter(isDone).length;
+  $("pct").textContent=Math.round(d/ST.length*100)+"% del camino";
+  $("xp").textContent=xp()+" XP";
+  $("legend").innerHTML=C.map(ch=>{const L=ST.filter(s=>s.n===ch.n),k=L.filter(isDone).length;return `<span class="lg ${k===L.length?"ok":""}">${ch.ic} Cap. ${ch.n} · ${k}/${L.length}</span>`}).join("")+`<span class="lg ${S.grad?"ok":""}">🎓 Graduación</span>`;
+  $("badges").innerHTML=badgeList().map(b=>`<div class="badge ${b.g?"got":""}"><div class="i">${b.i}</div><b>${esc(b.n)}</b></div>`).join("");
+  const o=ST[firstOpen()];
+  $("lead").textContent=ST.every(isDone)?"¡Completaste todo el camino!":"Siguiente estación: "+o.lb;
+}
+
+/* ===== PIEZAS ===== */
+function videoBlock(key,caption){
+  const u=VIDEOS[key]||"",m=u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);
+  const body=m?`<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}" title="${esc(caption)}" allowfullscreen></iframe>`
+   :`<div><div style="font-size:2.4rem">🎬</div><b class="ui">Video próximamente</b><div style="opacity:.8;font-size:.9rem">${esc(caption)}</div></div>`;
+  return `<div class="video">${body}</div>`;
+}
+const bicente=t=>`<div class="bicente"><span class="av"><img src="figurinbha.jpg" alt="" onerror="this.replaceWith(document.createTextNode('🦬'))"></span><span>«${esc(t)}» <b>— Bicente</b></span></div>`;
+function fieldHTML(card,f,i){
+  const v=((S.cards[card.id]||{}).v||{})[i],id=`${card.id}_${i}`;
+  const L=`<label class="f" for="${id}">${esc(f.l)}</label>`,a=`id="${id}" data-c="${card.id}" data-i="${i}"`;
+  if(f.k==="t")return L+`<input type="text" ${a} placeholder="${esc(f.p||"")}" value="${esc(v||"")}">`;
+  if(f.k==="a")return L+`<textarea ${a} placeholder="${esc(f.p||"")}">${esc(v||"")}</textarea>`;
+  if(f.k==="s")return L+`<select ${a}><option value="">Elige...</option>${f.o.map(o=>`<option ${v===o?"selected":""}>${o}</option>`).join("")}</select>`;
+  if(f.k==="c")return `<label class="f" style="font-weight:400"><input type="checkbox" data-c="${card.id}" data-i="${i}" data-chk ${v?"checked":""}> ${esc(f.l)}</label>`;
+  if(f.k==="m"){const sel=v||[];return L+`<div class="chips">${f.o.map(o=>`<button type="button" class="chip ${sel.includes(o)?"sel":""}" data-c="${card.id}" data-i="${i}" data-m="${esc(o)}" aria-pressed="${sel.includes(o)}">${esc(o)}</button>`).join("")}</div><small class="ui">Elige entre ${f.min} y ${f.max}.</small>`}
+  if(f.k==="x")return `<div class="count" id="cnt_${card.id}">⏱ 3</div><button type="button" class="btn alt" style="margin-top:0" data-timer="${card.id}">¡Iniciar mis 3 segundos!</button>`+L+`<input type="text" ${a} placeholder="${esc(f.p||"")}" value="${esc(v||"")}">`;
+}
+function findCard(id){for(const c of C)for(const k of c.cards)if(k.id===id)return k}
+function stHTML(s){
+  if(s.t==="intro"){const ch=C[s.n-1];
+    return `<h2>${ch.ic} Capítulo ${ch.n}: ${esc(ch.t)}</h2><p class="sub">${esc(ch.vid)}</p>${videoBlock(ch.n,"Video "+ch.n+" · "+ch.t)}${bicente(ch.say)}<button class="btn" data-intro="${ch.n}">${S.intro[ch.n]?"Seguir adelante":"¡Vamos, Bicente!"}</button>`}
+  if(s.t==="card"){const c=s.card,d=S.cards[c.id]&&S.cards[c.id].done;
+    return `<div class="card"><span class="tag">Tarjeta ${c.id}</span><span class="tag" style="background:var(--navy)">${esc(c.tp)}</span>${d?'<span class="tag">✔ completada</span>':""}
+    <h3>${esc(c.t)}</h3><p>${esc(c.d)}</p>
+    ${c.chips?`<div class="chips">${c.chips.map(x=>`<span class="chip static">${x}</span>`).join("")}<span class="chip static">…y muchos más</span></div>`:""}
+    ${c.f.map((f,i)=>fieldHTML(c,f,i)).join("")}
+    <button class="btn" data-done="${c.id}">${d?"Actualizar tarjeta":"Completar tarjeta (+"+XPC+" XP)"}</button><div class="msg" id="msg"></div></div>`}
+  if(s.t==="quiz"){const ch=C[s.n-1];
+    if(quizOk(s.n))return `<div class="win"><div class="big">${ch.ic}</div><h2 style="margin:0">¡Quiz aprobado!</h2><p>Ya tienes la insignia <b>${esc(ch.badge)}</b>.</p><button class="btn" data-close>Seguir el camino</button></div>`;
+    return `<h2>❓ Quiz del Capítulo ${ch.n}</h2><p class="sub">Responde todo bien para ganar la insignia <b>${esc(ch.badge)}</b> (+${XPQ} XP). Puedes intentarlo las veces que quieras.</p>
+    ${ch.quiz.map((it,qi)=>`<div class="q"><p>${qi+1}. ${esc(it.q)}</p>${it.o.map((o,oi)=>`<label class="opt" id="o_${qi}_${oi}"><input type="radio" name="q${qi}" value="${oi}"> ${esc(o)}</label>`).join("")}</div>`).join("")}
+    <button class="btn" data-quiz="${ch.n}">Comprobar respuestas</button><div class="msg" id="msg"></div>`}
+  return `<h2>🎓 Graduación</h2>${videoBlock("final","Video final · Cierre del curso")}${bicente(FINAL_SAY)}
+   ${S.grad?`<div class="cert"><img src="logobha.jpg" alt="" onerror="this.style.display='none'"><p class="ui">Big Horn Academy certifica que</p><h2>${esc(S.name)}</h2><p>completó el curso <b>Descubre Tus Talentos y Tu Camino Profesional</b>:<br>conoce sus talentos, eligió una dirección, identificó lo que necesita y construyó su manada.</p><p class="ui">${new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"})}</p></div><button class="btn noprint" onclick="window.print()">Imprimir certificado</button>`
+   :`<p class="sub">Escribe tu nombre completo para recibir tu certificado y la insignia final (+${XPG} XP).</p><label class="f" for="nm">Nombre completo</label><input type="text" id="nm" value="${esc(S.name)}"><button class="btn" data-grad>Obtener mi certificado</button><div class="msg" id="msg"></div>`}`;
+}
+
+/* ===== MODAL ===== */
+function openStation(i){
+  $("pbody").innerHTML=stHTML(ST[i]);$("ov").classList.add("on");document.body.style.overflow="hidden";$("ov").scrollTop=0;$("panel").focus();
+}
+function closeModal(){
+  if(!$("ov").classList.contains("on"))return;
+  $("ov").classList.remove("on");document.body.style.overflow="";
+  drawMap();head();hopTo(firstOpen());
+}
+
+/* ===== EVENTOS ===== */
+document.addEventListener("click",e=>{
+  if(e.target.id==="ov"){closeModal();return}
+  const t=e.target.closest("button");if(!t)return;
+  const D=t.dataset;
+  if(D.s!==undefined){
+    const i=+D.s;
+    if(i>firstOpen()){pop("🔒 Completa primero la estación anterior");return}
+    hopTo(i,()=>openStation(i));
+  }
+  else if(t.hasAttribute("data-go")){const i=firstOpen();hopTo(i,()=>openStation(i))}
+  else if(t.hasAttribute("data-close"))closeModal();
+  else if(D.intro){S.intro[D.intro]=true;save();pop("🦬 ¡Capítulo "+D.intro+" en marcha! +"+XPI+" XP");closeModal()}
+  else if(D.m!==undefined){
+    const c=findCard(D.c),i=+D.i,f=c.f[i];
+    const st=(S.cards[c.id]=S.cards[c.id]||{v:{}});st.v=st.v||{};let sel=st.v[i]||[];const o=D.m;
+    if(sel.includes(o))sel=sel.filter(x=>x!==o);else if(sel.length<f.max)sel=sel.concat(o);else{pop("Máximo "+f.max+" opciones");return}
+    st.v[i]=sel;save();
+    t.parentElement.querySelectorAll(".chip").forEach(b=>{const on=sel.includes(b.dataset.m);b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on)});
+  }
+  else if(D.timer){
+    const id=D.timer,el=$("cnt_"+id);let n=3;el.textContent="⏱ "+n;t.disabled=true;
+    const iv=setInterval(()=>{n--;if(n>0)el.textContent="⏱ "+n;else{clearInterval(iv);el.textContent="¡Tiempo! Escríbelo ya";t.disabled=false;const inp=$(id+"_0");inp&&inp.focus()}},1000);
+  }
+  else if(D.done)completeCard(D.done);
+  else if(D.quiz)checkQuiz(+D.quiz);
+  else if(t.hasAttribute("data-grad")){
+    const nm=$("nm").value.trim();
+    if(nm.length<3){$("msg").textContent="Escribe tu nombre completo.";return}
+    S.name=nm;S.grad=true;save();$("pbody").innerHTML=stHTML(ST[ST.length-1]);pop("🎓 ¡Bisonte Graduado! +"+XPG+" XP");
+  }
+  else if(t.hasAttribute("data-reset")){if(confirm("¿Borrar todo tu progreso y respuestas?")){S={cards:{},quiz:{},intro:{},grad:false,name:""};save();figIdx=0;drawMap();head();window.scrollTo(0,0)}}
+});
+document.addEventListener("input",e=>{
+  const t=e.target;if(!t.dataset||!t.dataset.c||t.dataset.m!==undefined)return;
+  const st=(S.cards[t.dataset.c]=S.cards[t.dataset.c]||{v:{}});st.v=st.v||{};
+  st.v[t.dataset.i]=t.hasAttribute("data-chk")?t.checked:t.value;save();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{drawMap()},150)});
+
+function completeCard(id){
+  const card=findCard(id),st=(S.cards[id]=S.cards[id]||{v:{}});st.v=st.v||{};
+  for(let i=0;i<card.f.length;i++){
+    const f=card.f[i],v=st.v[i];
+    const bad=f.k==="m"?!(v&&v.length>=f.min):f.k==="c"?!v:!(v&&String(v).trim().length>0);
+    if(bad){$("msg").textContent=f.k==="m"?"Elige al menos "+f.min+" opciones.":"Falta completar: "+f.l;return}
+  }
+  const was=st.done;st.done=true;save();
+  pop(was?"Tarjeta actualizada":"✔ Tarjeta "+id+" completada +"+XPC+" XP");
+  closeModal();
+}
+function checkQuiz(n){
+  const ch=C[n-1];let ok=0;
+  ch.quiz.forEach((it,qi)=>{
+    const sel=document.querySelector(`input[name=q${qi}]:checked`);
+    it.o.forEach((_,oi)=>$(`o_${qi}_${oi}`).classList.remove("right","wrong"));
+    if(sel){const v=+sel.value;if(v===it.a){ok++;$(`o_${qi}_${v}`).classList.add("right")}else $(`o_${qi}_${v}`).classList.add("wrong")}
+  });
+  const q=S.quiz[n]=S.quiz[n]||{tries:0,passed:false};
+  q.tries=(q.tries||0)+1;
+  if(ok===ch.quiz.length){q.passed=true;save();pop("🏅 Insignia «"+ch.badge+"» +"+XPQ+" XP");$("pbody").innerHTML=stHTML(ST.find(s=>s.t==="quiz"&&s.n===n));return}
+  save();$("msg").textContent=`Acertaste ${ok} de ${ch.quiz.length}. Revisa las respuestas en rojo y vuelve a intentarlo.`;
+}
+
+drawMap();head();
+</script>
+</body>
+</html>
