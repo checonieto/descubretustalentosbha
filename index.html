@@ -5,44 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Descubre Tus Talentos y Tu Camino Profesional | Big Horn Academy</title>
 <style>
-:root{--navy:#0b1f4b;--navy2:#16336e;--ink:#05070d;--mist:#eef2fa;--line:#cfd8ec;--ok:#1f7a4d;--bad:#a12626}
+:root{--navy:#0b1f4b;--navy2:#16336e;--ink:#05070d;--mist:#e9eef9;--line:#cfd8ec;--ok:#1f7a4d;--bad:#a12626}
 *{box-sizing:border-box}
 body{margin:0;font-family:Georgia,"Times New Roman",serif;background:var(--mist);color:var(--ink);line-height:1.55}
 h1,h2,h3,button,.ui{font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif}
-header{background:var(--navy);color:#fff;padding:12px 18px;border-bottom:4px solid var(--ink)}
-.top{display:flex;align-items:center;gap:12px;max-width:980px;margin:auto;flex-wrap:wrap}
-.top img.logo{height:50px;background:#fff;border-radius:8px;padding:3px}
-.top h1{font-size:1.05rem;margin:0;flex:1;min-width:170px}
-.xp,.pc{background:var(--ink);padding:6px 12px;border-radius:20px;font:700 .85rem "Trebuchet MS",sans-serif}
-.pc{background:#fff;color:var(--navy)}
-main{max-width:980px;margin:auto;padding:14px 12px 50px}
-.hero{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;margin:6px 0 10px}
-.hero p{margin:0;flex:1;min-width:200px;color:var(--navy);font-weight:700}
-.legend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.lg{font:700 .75rem "Trebuchet MS",sans-serif;border:2px solid var(--navy);border-radius:16px;padding:3px 10px;background:#fff;color:var(--navy)}
-.lg.ok{background:var(--navy);color:#fff}
-.board{position:relative;background:#fff;border:3px solid var(--navy);border-radius:18px;overflow:hidden;background-image:radial-gradient(#0b1f4b14 1.5px,transparent 1.5px);background-size:22px 22px}
-#nodes{position:relative}
-.node{position:absolute;width:var(--d);height:var(--d);transform:translate(-50%,-50%);border-radius:50%;border:4px solid var(--navy);background:#fff;color:var(--navy);font:800 .95rem "Trebuchet MS",sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
-.node .lbl{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:7px;width:104px;text-align:center;font:600 .66rem/1.2 "Trebuchet MS",sans-serif;color:#2b3550;pointer-events:none}
-.node.quiz{border-color:var(--ink);border-style:double;border-width:6px}
-.node.done{background:var(--navy);color:#fff}
-.node.cur{box-shadow:0 0 0 7px #0b1f4b30;animation:pulse 1.8s infinite}
-.node.lock{border-color:#aab4cf;color:#aab4cf;background:#f1f4fa}
-.node:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-@keyframes pulse{50%{box-shadow:0 0 0 13px #0b1f4b10}}
-.fig{position:absolute;z-index:6;width:58px;height:58px;transform:translate(-50%,-50%);pointer-events:none;transition:left var(--hd,.45s) ease-in-out,top var(--hd,.45s) ease-in-out}
-.fig .in{width:100%;height:100%;font-size:42px;line-height:58px;text-align:center;filter:drop-shadow(0 4px 3px #0005)}
+main{max-width:800px;margin:auto;padding:12px 10px 50px}
+
+/* PANEL DE CONTROL */
+.dash{background:linear-gradient(140deg,#16336e,#0b1f4b 55%,#05070d);color:#fff;border-radius:22px;padding:18px;border:3px solid var(--ink);box-shadow:0 8px 0 var(--ink)}
+.dtop{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.dtop img.logo{height:64px;background:#fff;border-radius:12px;padding:4px}
+.who{flex:1;min-width:210px}
+.who h1{margin:0 0 6px;font-size:1.1rem;line-height:1.25}
+.who input{width:100%;background:#ffffff1c;border:2px solid #ffffff55;color:#fff;border-radius:10px;padding:7px 10px;font:.95rem "Trebuchet MS",sans-serif}
+.who input::placeholder{color:#ffffffaa}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:14px 0}
+.tile{background:#ffffff14;border:2px solid #ffffff30;border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-height:76px}
+.tile small{display:block;opacity:.8;font:.72rem "Trebuchet MS",sans-serif}
+.tile b{font:800 1.35rem "Trebuchet MS",sans-serif;line-height:1.1;display:block}
+.tile .bar{height:6px;background:#ffffff30;border-radius:4px;margin-top:6px;overflow:hidden}
+.tile .bar i{display:block;height:100%;background:#fff;border-radius:4px;transition:width .6s}
+.ring text{fill:#fff;font:800 15px "Trebuchet MS",sans-serif}
+.medals{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;background:#00000040;border-radius:16px;padding:12px 8px}
+.medal{width:78px;text-align:center;font:600 .66rem/1.2 "Trebuchet MS",sans-serif;color:#ffffffaa}
+.medal .c{width:58px;height:58px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;border:3px dashed #ffffff66;background:#ffffff14}
+.medal .c span{filter:grayscale(1);opacity:.35}
+.medal.got{color:#fff}
+.medal.got .c{border:3px solid #fff;background:#fff;box-shadow:0 0 0 4px #ffffff40;animation:pop .7s}
+.medal.got .c span{filter:none;opacity:1}
+@keyframes pop{40%{transform:scale(1.25) rotate(-8deg)}}
+.go{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.go p{margin:0;flex:1;min-width:180px;font:700 .95rem "Trebuchet MS",sans-serif}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:24px;padding:11px 24px;font-weight:700;cursor:pointer;margin-top:14px;font-size:.95rem}
+.btn:hover{background:var(--ink)}
+.btn.alt{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn.big{background:#fff;color:var(--navy);margin:0;font-size:1rem;box-shadow:0 4px 0 var(--ink)}
+.btn.big:hover{background:var(--mist)}
+
+/* HUD fijo */
+.hud{position:fixed;top:0;left:0;right:0;z-index:30;background:var(--navy);color:#fff;display:flex;gap:10px;align-items:center;padding:6px 12px;border-bottom:3px solid var(--ink);transform:translateY(-70px);transition:transform .3s;font:700 .82rem "Trebuchet MS",sans-serif}
+.hud.on{transform:none}
+.hud img{height:30px;background:#fff;border-radius:6px;padding:2px}
+.hud span{flex:1}
+.hud button{margin:0;padding:6px 14px;font-size:.8rem;background:#fff;color:var(--navy)}
+
+/* TABLERO */
+.board{position:relative;margin-top:22px;border:4px solid var(--ink);border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 8px 0 var(--ink)}
+#layer{position:absolute;inset:0}
+.band{position:absolute;left:0;right:0}
+.scn{position:absolute;opacity:.7;pointer-events:none;line-height:1}
+.banner{position:absolute;left:50%;transform:translateX(-50%);width:min(88%,540px);background:var(--navy);color:#fff;border:4px solid #fff;outline:4px solid var(--ink);border-radius:18px;padding:8px 14px;display:flex;align-items:center;gap:12px;text-align:left;z-index:2}
+.banner .e{font-size:2.1rem}
+.banner small{display:block;opacity:.8;font:.7rem "Trebuchet MS",sans-serif}
+.banner b{font:800 1.02rem/1.2 "Trebuchet MS",sans-serif}
+.node{position:absolute;width:var(--d);height:var(--d);transform:translate(-50%,-50%);border-radius:50%;border:5px solid var(--navy);background:radial-gradient(circle at 35% 30%,#fff,#d5def3);color:var(--navy);font:800 1.15rem "Trebuchet MS",sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;box-shadow:0 6px 0 var(--ink);z-index:3;transition:transform .2s}
+.node:hover:not(.lock){transform:translate(-50%,-50%) scale(1.07)}
+.node .sym{font-size:1.45rem}
+.node.quiz{border-radius:28%;border-color:var(--ink)}
+.node.final{width:calc(var(--d)*1.3);height:calc(var(--d)*1.3);background:radial-gradient(circle at 35% 30%,#fff,#bcc9ea);border-color:#fff;outline:5px solid var(--ink);color:var(--navy)}
+.node.final .sym{font-size:2.3rem}
+.node.done{background:radial-gradient(circle at 35% 30%,#2f5bc0,#0b1f4b);color:#fff;border-color:var(--ink)}
+.node.done::after{content:"✔";position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:.8rem;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.node.cur{animation:pulse 1.6s infinite}
+.node.lock{border-color:#8c9bc0;background:#e3e9f7;color:#8c9bc0;box-shadow:0 6px 0 #8c9bc0;cursor:not-allowed}
+.node.lock .sym{opacity:.55}
+.node:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+@keyframes pulse{0%,100%{box-shadow:0 6px 0 var(--ink),0 0 0 0 #0b1f4b66}50%{box-shadow:0 6px 0 var(--ink),0 0 0 16px #0b1f4b00}}
+.nl{position:absolute;top:50%;transform:translateY(-50%);width:150px;background:#fff;border:2px solid var(--navy);border-radius:12px;padding:5px 9px;font:700 .72rem/1.25 "Trebuchet MS",sans-serif;color:var(--navy);text-align:left;pointer-events:none;box-shadow:0 3px 0 var(--ink)}
+.nl small{display:block;font-weight:400;opacity:.7;font-size:.64rem}
+.nl.r{left:calc(100% + 12px)}.nl.l{right:calc(100% + 12px)}
+.node.lock .nl{opacity:.6}
+.fig{position:absolute;z-index:8;width:var(--fs,84px);height:var(--fs,84px);transform:translate(-50%,-100%);pointer-events:none;transition:left var(--hd,.45s) ease-in-out,top var(--hd,.45s) ease-in-out}
+.fig .in{width:100%;height:100%;font-size:60px;line-height:84px;text-align:center;filter:drop-shadow(0 6px 3px #0006)}
 .fig img{width:100%;height:100%;object-fit:contain;display:block}
 .fig .in.hop{animation:hop var(--hd,.45s) ease-in-out}
-@keyframes hop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-34px) scale(1.18) rotate(-6deg)}100%{transform:translateY(0) scale(1)}}
-.below{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:18px;margin-top:18px}
-.below h2{margin:0 0 10px;color:var(--navy);font-size:1.15rem}
-.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px}
-.badge{text-align:center;border:2px solid var(--line);border-radius:50%;aspect-ratio:1;padding:10px;font:.74rem "Trebuchet MS",sans-serif;color:#7a86a5;background:#f4f6fb;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.badge .i{font-size:1.9rem;filter:grayscale(1);opacity:.4}
-.badge.got{border-color:var(--navy);background:var(--navy);color:#fff}
-.badge.got .i{filter:none;opacity:1}
+@keyframes hop{0%{transform:translateY(0) scale(1)}45%{transform:translateY(-46px) scale(1.15) rotate(-7deg)}100%{transform:none}}
+.cf{position:fixed;top:-16px;width:10px;height:14px;z-index:70;animation:fall 1.9s linear forwards;pointer-events:none;border:1px solid var(--ink)}
+@keyframes fall{to{transform:translateY(108vh) rotate(600deg)}}
+
+/* VENTANA */
 .overlay{position:fixed;inset:0;background:#05070dcc;display:none;overflow:auto;z-index:40;padding:18px 10px}
 .overlay.on{display:block}
 .panel{max-width:760px;margin:auto;background:#fff;border-radius:18px;border:3px solid var(--navy);padding:22px 20px;position:relative;outline:0}
@@ -53,7 +94,7 @@ main{max-width:980px;margin:auto;padding:14px 12px 50px}
 .video iframe{width:100%;height:100%;border:0}
 .bicente{display:flex;gap:12px;align-items:center;background:var(--mist);border-left:6px solid var(--navy);padding:10px 14px;border-radius:8px;margin:12px 0;font-style:italic}
 .bicente .av{font-size:2rem}
-.bicente .av img{width:48px;height:48px;object-fit:contain}
+.bicente .av img{width:52px;height:52px;object-fit:contain}
 .card h3{margin:0 0 4px;color:var(--navy);font-size:1.1rem}
 .tag{display:inline-block;background:var(--ink);color:#fff;font:700 .72rem "Trebuchet MS",sans-serif;padding:2px 10px;border-radius:12px;margin:0 4px 8px 0}
 .card p{margin:6px 0}
@@ -65,11 +106,7 @@ textarea{min-height:70px;resize:vertical}
 .chip{border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:18px;padding:5px 12px;font:.82rem "Trebuchet MS",sans-serif;cursor:pointer}
 .chip.sel{background:var(--navy);color:#fff}
 .chip.static{cursor:default;border-color:var(--line);color:#445}
-.btn{background:var(--navy);color:#fff;border:0;border-radius:24px;padding:11px 24px;font-weight:700;cursor:pointer;margin-top:14px;font-size:.95rem}
-.btn:hover{background:var(--ink)}
-.btn.alt{background:#fff;color:var(--navy);border:2px solid var(--navy)}
 .msg{font:.85rem "Trebuchet MS",sans-serif;margin-top:8px;color:var(--bad);min-height:1em}
-.okmsg{color:var(--ok)}
 .count{font:800 2.4rem "Trebuchet MS",sans-serif;color:var(--navy);margin:8px 0}
 .q{margin:16px 0;padding-bottom:10px;border-bottom:1px dashed var(--line)}
 .q p{font-weight:700;margin:0 0 6px}
@@ -81,30 +118,33 @@ textarea{min-height:70px;resize:vertical}
 .cert img{height:70px}
 .win{text-align:center;padding:10px 0}
 .win .big{font-size:4rem}
+.tlogo{background:#fff;color:#0b1f4b;border-radius:10px;padding:7px 11px;font:800 .8rem/1.1 "Trebuchet MS",sans-serif;text-align:center;letter-spacing:.5px}
+.reset{display:block;margin:22px auto 0}
 .pop{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:30px;font:700 .95rem "Trebuchet MS",sans-serif;transition:transform .4s;z-index:60;text-align:center;max-width:90vw}
 .pop.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){.nl{width:112px;font-size:.66rem}.banner b{font-size:.9rem}.fig .in{font-size:48px}.medal{width:64px}.medal .c{width:48px;height:48px;font-size:1.4rem}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-@media print{header,main,.xbtn,.noprint,.pop{display:none!important}.overlay{position:static!important;display:block!important;background:none;padding:0}.panel{border:0}body{background:#fff}}
+@media print{main,.hud,.xbtn,.noprint,.pop{display:none!important}.overlay{position:static!important;display:block!important;background:none;padding:0}.panel{border:0}body{background:#fff}}
 </style>
 </head>
 <body>
-<header>
-  <div class="top">
-    <img class="logo" src="logobha.jpg" alt="Big Horn Academy" onerror="this.style.display='none'">
-    <h1>Descubre Tus Talentos y Tu Camino Profesional</h1>
-    <div class="pc" id="pct"></div>
-    <div class="xp" id="xp"></div>
-  </div>
-</header>
+<div class="hud" id="hud"><img data-i="logo" alt="" onerror="noLogo(this)"><span id="hlead"></span><button class="btn" data-go>Continuar</button></div>
 <main>
-  <div class="hero"><p id="lead"></p><button class="btn" style="margin:0" data-go>Continuar mi camino</button></div>
-  <div class="legend" id="legend"></div>
+  <section class="dash" id="dash">
+    <div class="dtop">
+      <img class="logo" data-i="logo" alt="Big Horn Academy" onerror="noLogo(this)">
+      <div class="who"><h1>Descubre Tus Talentos y Tu Camino Profesional</h1>
+        <input type="text" id="who" placeholder="Escribe tu nombre para tu certificado" aria-label="Tu nombre"></div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="medals" id="medals"></div>
+    <div class="go"><p id="lead"></p><button class="btn big" data-go>Continuar mi camino</button></div>
+  </section>
   <div class="board" id="board">
-    <div id="nodes"></div>
-    <div class="fig" id="fig"><div class="in"><img src="figurinbha.jpg" alt="Bicente" onerror="this.replaceWith(document.createTextNode('🦬'))"></div></div>
+    <div id="layer"></div>
+    <div class="fig" id="fig"><div class="in"><img data-i="fig" alt="Bicente" onerror="this.replaceWith(document.createTextNode('🦬'))"></div></div>
   </div>
-  <section class="below"><h2>🏅 Tus insignias</h2><div class="badges" id="badges"></div>
-    <button class="btn alt" data-reset>Reiniciar mi progreso</button></section>
+  <button class="btn alt reset" data-reset>Reiniciar mi progreso</button>
 </main>
 <div class="overlay" id="ov"><div class="panel" id="panel" tabindex="-1"><button class="xbtn" data-close aria-label="Cerrar">✕</button><div id="pbody"></div></div></div>
 <div class="pop" id="pop" role="status"></div>
@@ -112,6 +152,10 @@ textarea{min-height:70px;resize:vertical}
 <script>
 /* ===== VIDEOS: pega aquí los links de YouTube (déjalos vacíos para mostrar el espacio reservado) ===== */
 const VIDEOS = { 1:"", 2:"", 3:"", 4:"", final:"" };
+
+/* ===== IMÁGENES: cambia aquí las rutas si tus archivos están en otra carpeta o tienen otro nombre ===== */
+const IMG = { logo:"logobha.jpg", fig:"figurinbha.jpg" };
+function noLogo(el){const s=document.createElement("b");s.className="tlogo";s.innerHTML="BIG HORN<br>ACADEMY";el.replaceWith(s)}
 
 /* ===== CONTENIDO ===== */
 // k: t=texto corto, a=párrafo, s=lista, m=selección múltiple, c=casilla, x=reto de 3 segundos
@@ -240,32 +284,61 @@ function badgeList(){
 function pop(t){const p=$("pop");p.textContent=t;p.classList.add("show");clearTimeout(pop.t);pop.t=setTimeout(()=>p.classList.remove("show"),2600)}
 
 /* ===== MAPA ===== */
+const ZONES=C.map((c,k)=>({i:c.ic,s:"Capítulo "+c.n,t:c.t,
+  e:[["🌾","🌿","🪨","☁️"],["🌲","⛰️","💨","🌲"],["🌊","🪵","🐟","💧"],["🦬","🌾","🦬","🌄"]][k],
+  bg:["linear-gradient(#f6f8fd,#e6edfa)","linear-gradient(#e6edfa,#d3def4)","linear-gradient(#d3def4,#bccbec)","linear-gradient(#bccbec,#e6edfa)"][k]}))
+  .concat([{i:"🎓",s:"Meta final",t:"Graduación en la cima",e:["🏔️","⭐","🌄","⭐"],bg:"linear-gradient(#e6edfa,#0b1f4b 35%,#05070d)"}]);
+const LV=[[0,"Cría de Bisonte"],[50,"Caminante"],[130,"Explorador"],[220,"Guía de la Manada"],[320,"Bisonte Graduado"]];
 let figIdx=firstOpen(),G=null;
+
 function geo(){
-  const w=$("board").clientWidth,cols=w<620?3:5,d=w<620?58:70,padX=Math.max(d/2+18,w*.1),rowH=w<620?122:136;
-  const pos=ST.map((s,i)=>{const r=Math.floor(i/cols),c0=i%cols,c=r%2?cols-1-c0:c0;return{x:padX+c*(w-2*padX)/(cols-1),y:76+r*rowH}});
-  return{pos,d,w,h:76+(Math.ceil(ST.length/cols)-1)*rowH+84};
+  const w=$("board").clientWidth,mob=w<520,d=mob?66:80,rowH=mob?140:156,ban=mob?84:96,xs=[.27,.73];
+  let y=0,k=0;const pos=[],bands=[];
+  ST.forEach(s=>{
+    if(s.t==="intro"||s.t==="final"){
+      if(bands.length){y+=84;bands[bands.length-1].y2=y}
+      bands.push({y1:y});y+=ban+d/2+14;k=0;
+    }else y+=rowH;
+    pos.push({x:w*xs[k%2],y});k++;
+  });
+  bands[bands.length-1].y2=y+130;
+  return{pos,bands,d,w,mob,ban,h:y+130};
 }
 function placeFig(anim){
-  const f=$("fig"),p=G.pos[figIdx];
+  const f=$("fig"),p=G.pos[figIdx],r=G.d*(ST[figIdx].t==="final"?.65:.5);
   if(!anim)f.style.transition="none";
-  f.style.left=p.x+"px";f.style.top=(p.y-G.d/2-26)+"px";
+  f.style.left=p.x+"px";f.style.top=(p.y-r+26)+"px";f.style.setProperty("--fs",(G.mob?68:84)+"px");
   if(!anim){void f.offsetWidth;f.style.transition=""}
 }
 function drawMap(){
-  G=geo();const cur=firstOpen(),n=$("nodes");
-  n.style.height=G.h+"px";n.style.setProperty("--d",G.d+"px");
-  let svg=`<svg width="${G.w}" height="${G.h}" style="position:absolute;left:0;top:0" aria-hidden="true">`;
-  for(let i=0;i<ST.length-1;i++){const a=G.pos[i],b=G.pos[i+1],dn=isDone(ST[i]);
-    svg+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${dn?"#0b1f4b":"#b7c1da"}" stroke-width="${dn?7:5}" stroke-linecap="round" ${dn?"":'stroke-dasharray="1 13"'}/>`}
-  n.innerHTML=svg+"</svg>"+ST.map((s,i)=>{
-    const st=isDone(s)?"done":i===cur?"cur":i>cur?"lock":"";
-    return `<button class="node ${s.t==="quiz"?"quiz":""} ${st}" data-s="${i}" style="left:${G.pos[i].x}px;top:${G.pos[i].y}px" aria-label="${esc(s.lb)}${st==="lock"?" (bloqueada)":""}">${s.sym}<span class="lbl">${esc(s.lb)}</span></button>`}).join("");
-  placeFig(false);
+  G=geo();const cur=firstOpen(),B=$("board");
+  B.style.height=G.h+"px";B.style.setProperty("--d",G.d+"px");
+  let h="";
+  G.bands.forEach((b,i)=>{
+    const z=ZONES[i],n=Math.max(3,Math.round((b.y2-b.y1)/(G.mob?150:130)));
+    h+=`<div class="band" style="top:${b.y1}px;height:${b.y2-b.y1}px;background:${z.bg}"></div>`;
+    for(let j=0;j<n;j++){const yy=b.y1+G.ban+30+(b.y2-b.y1-G.ban-60)*(j+.5)/n;
+      h+=`<span class="scn" style="top:${yy}px;${j%2?"right":"left"}:${G.mob?4:14}px;font-size:${G.mob?22:34}px">${z.e[j%z.e.length]}</span>`}
+    h+=`<div class="banner" style="top:${b.y1+12}px"><span class="e">${z.i}</span><div><small>${z.s}</small><b>${esc(z.t)}</b></div></div>`;
+  });
+  let bd="",fl="",dz="";
+  for(let i=0;i<ST.length-1;i++){
+    const a=G.pos[i],b=G.pos[i+1],m=(a.y+b.y)/2,dn=isDone(ST[i]);
+    const p=`M${a.x} ${a.y}C${a.x} ${m} ${b.x} ${m} ${b.x} ${b.y}`;
+    bd+=`<path d="${p}" stroke="${dn?"#05070d":"#8c9bc0"}" stroke-width="44"/>`;
+    fl+=`<path d="${p}" stroke="${dn?"#16336e":"#e3e9f7"}" stroke-width="34"/>`;
+    dz+=`<path d="${p}" stroke="${dn?"#fff":"#8c9bc0"}" stroke-width="3" stroke-dasharray="3 12"/>`;
+  }
+  h+=`<svg width="${G.w}" height="${G.h}" style="position:absolute;left:0;top:0" fill="none" stroke-linecap="round" aria-hidden="true">${bd}${fl}${dz}</svg>`;
+  h+=ST.map((s,i)=>{
+    const st=isDone(s)?"done":i===cur?"cur":i>cur?"lock":"",side=G.pos[i].x>G.w/2?"l":"r";
+    const sm=s.t==="intro"?"Capítulo "+s.n+" · video":s.t==="card"?"Tarjeta "+s.id:s.t==="quiz"?"Quiz del capítulo "+s.n:"Meta final";
+    return `<button class="node ${s.t==="quiz"?"quiz":s.t==="final"?"final":""} ${st}" data-s="${i}" style="left:${G.pos[i].x}px;top:${G.pos[i].y}px" aria-label="${esc(s.lb)}${st==="lock"?" (bloqueada)":""}"><span class="sym">${s.sym}</span><span class="nl ${side}"><small>${sm}</small>${esc(s.lb)}</span></button>`}).join("");
+  $("layer").innerHTML=h;placeFig(false);
 }
 function hopTo(t,cb){
   if(figIdx===t){cb&&cb();return}
-  const f=$("fig"),k=Math.abs(t-figIdx),few=k<=3,ms=few?450:750;
+  const f=$("fig"),k=Math.abs(t-figIdx),few=k<=3,ms=few?450:800;
   figIdx+=few?(t>figIdx?1:-1):(t-figIdx);
   f.style.setProperty("--hd",ms+"ms");placeFig(true);
   const inn=f.firstElementChild;inn.classList.remove("hop");void inn.offsetWidth;inn.classList.add("hop");
@@ -273,14 +346,19 @@ function hopTo(t,cb){
   setTimeout(()=>hopTo(t,cb),ms+40);
 }
 function head(){
-  const d=ST.filter(isDone).length;
-  $("pct").textContent=Math.round(d/ST.length*100)+"% del camino";
-  $("xp").textContent=xp()+" XP";
-  $("legend").innerHTML=C.map(ch=>{const L=ST.filter(s=>s.n===ch.n),k=L.filter(isDone).length;return `<span class="lg ${k===L.length?"ok":""}">${ch.ic} Cap. ${ch.n} · ${k}/${L.length}</span>`}).join("")+`<span class="lg ${S.grad?"ok":""}">🎓 Graduación</span>`;
-  $("badges").innerHTML=badgeList().map(b=>`<div class="badge ${b.g?"got":""}"><div class="i">${b.i}</div><b>${esc(b.n)}</b></div>`).join("");
-  const o=ST[firstOpen()];
-  $("lead").textContent=ST.every(isDone)?"¡Completaste todo el camino!":"Siguiente estación: "+o.lb;
+  const d=ST.filter(isDone).length,pc=Math.round(d/ST.length*100),x=xp();
+  let li=0;LV.forEach((l,i)=>{if(x>=l[0])li=i});
+  const nx=LV[li+1],lp=nx?Math.round((x-LV[li][0])/(nx[0]-LV[li][0])*100):100;
+  const cd=ST.filter(s=>s.t==="card"&&isDone(s)).length,nc=ST.filter(s=>s.t==="card").length,qd=ST.filter(s=>s.t==="quiz"&&isDone(s)).length,circ=2*Math.PI*30;
+  $("tiles").innerHTML=
+   `<div class="tile"><svg class="ring" width="74" height="74" viewBox="0 0 74 74" aria-hidden="true"><circle cx="37" cy="37" r="30" fill="none" stroke="#ffffff30" stroke-width="8"/><circle cx="37" cy="37" r="30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pc/100)}" transform="rotate(-90 37 37)"/><text x="37" y="42" text-anchor="middle">${pc}%</text></svg><div><small>Camino recorrido</small><b>${d}/${ST.length}</b></div></div>`+
+   `<div class="tile"><div><small>Nivel</small><b style="font-size:1.05rem">${LV[li][1]}</b><div class="bar"><i style="width:${lp}%"></i></div></div></div>`+
+   `<div class="tile"><div><small>Puntos de experiencia</small><b>${x} XP</b></div></div>`+
+   `<div class="tile"><div><small>Tarjetas · Quizzes</small><b>${cd}/${nc} · ${qd}/${C.length}</b></div></div>`;
+  $("medals").innerHTML=badgeList().map(b=>`<div class="medal ${b.g?"got":""}"><div class="c"><span>${b.i}</span></div>${esc(b.n)}</div>`).join("");
+  $("lead").textContent=$("hlead").textContent=ST.every(isDone)?"¡Completaste todo el camino!":"Siguiente estación: "+ST[firstOpen()].lb;
 }
+function confetti(){for(let i=0;i<34;i++){const c=document.createElement("div");c.className="cf";c.style.left=Math.random()*100+"vw";c.style.background=["#0b1f4b","#fff","#05070d","#2f5bc0"][i%4];c.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),2700)}}
 
 /* ===== PIEZAS ===== */
 function videoBlock(key,caption){
@@ -289,7 +367,7 @@ function videoBlock(key,caption){
    :`<div><div style="font-size:2.4rem">🎬</div><b class="ui">Video próximamente</b><div style="opacity:.8;font-size:.9rem">${esc(caption)}</div></div>`;
   return `<div class="video">${body}</div>`;
 }
-const bicente=t=>`<div class="bicente"><span class="av"><img src="figurinbha.jpg" alt="" onerror="this.replaceWith(document.createTextNode('🦬'))"></span><span>«${esc(t)}» <b>— Bicente</b></span></div>`;
+const bicente=t=>`<div class="bicente"><span class="av"><img src="${IMG.fig}" alt="" onerror="this.replaceWith(document.createTextNode('🦬'))"></span><span>«${esc(t)}» <b>— Bicente</b></span></div>`;
 function fieldHTML(card,f,i){
   const v=((S.cards[card.id]||{}).v||{})[i],id=`${card.id}_${i}`;
   const L=`<label class="f" for="${id}">${esc(f.l)}</label>`,a=`id="${id}" data-c="${card.id}" data-i="${i}"`;
@@ -316,7 +394,7 @@ function stHTML(s){
     ${ch.quiz.map((it,qi)=>`<div class="q"><p>${qi+1}. ${esc(it.q)}</p>${it.o.map((o,oi)=>`<label class="opt" id="o_${qi}_${oi}"><input type="radio" name="q${qi}" value="${oi}"> ${esc(o)}</label>`).join("")}</div>`).join("")}
     <button class="btn" data-quiz="${ch.n}">Comprobar respuestas</button><div class="msg" id="msg"></div>`}
   return `<h2>🎓 Graduación</h2>${videoBlock("final","Video final · Cierre del curso")}${bicente(FINAL_SAY)}
-   ${S.grad?`<div class="cert"><img src="logobha.jpg" alt="" onerror="this.style.display='none'"><p class="ui">Big Horn Academy certifica que</p><h2>${esc(S.name)}</h2><p>completó el curso <b>Descubre Tus Talentos y Tu Camino Profesional</b>:<br>conoce sus talentos, eligió una dirección, identificó lo que necesita y construyó su manada.</p><p class="ui">${new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"})}</p></div><button class="btn noprint" onclick="window.print()">Imprimir certificado</button>`
+   ${S.grad?`<div class="cert"><img src="${IMG.logo}" alt="" onerror="noLogo(this)"><p class="ui">Big Horn Academy certifica que</p><h2>${esc(S.name)}</h2><p>completó el curso <b>Descubre Tus Talentos y Tu Camino Profesional</b>:<br>conoce sus talentos, eligió una dirección, identificó lo que necesita y construyó su manada.</p><p class="ui">${new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"})}</p></div><button class="btn noprint" onclick="window.print()">Imprimir certificado</button>`
    :`<p class="sub">Escribe tu nombre completo para recibir tu certificado y la insignia final (+${XPG} XP).</p><label class="f" for="nm">Nombre completo</label><input type="text" id="nm" value="${esc(S.name)}"><button class="btn" data-grad>Obtener mi certificado</button><div class="msg" id="msg"></div>`}`;
 }
 
@@ -359,7 +437,7 @@ document.addEventListener("click",e=>{
   else if(t.hasAttribute("data-grad")){
     const nm=$("nm").value.trim();
     if(nm.length<3){$("msg").textContent="Escribe tu nombre completo.";return}
-    S.name=nm;S.grad=true;save();$("pbody").innerHTML=stHTML(ST[ST.length-1]);pop("🎓 ¡Bisonte Graduado! +"+XPG+" XP");
+    S.name=nm;S.grad=true;save();$("pbody").innerHTML=stHTML(ST[ST.length-1]);pop("🎓 ¡Bisonte Graduado! +"+XPG+" XP");confetti();
   }
   else if(t.hasAttribute("data-reset")){if(confirm("¿Borrar todo tu progreso y respuestas?")){S={cards:{},quiz:{},intro:{},grad:false,name:""};save();figIdx=0;drawMap();head();window.scrollTo(0,0)}}
 });
@@ -391,11 +469,16 @@ function checkQuiz(n){
   });
   const q=S.quiz[n]=S.quiz[n]||{tries:0,passed:false};
   q.tries=(q.tries||0)+1;
-  if(ok===ch.quiz.length){q.passed=true;save();pop("🏅 Insignia «"+ch.badge+"» +"+XPQ+" XP");$("pbody").innerHTML=stHTML(ST.find(s=>s.t==="quiz"&&s.n===n));return}
+  if(ok===ch.quiz.length){q.passed=true;save();pop("🏅 Insignia «"+ch.badge+"» +"+XPQ+" XP");confetti();$("pbody").innerHTML=stHTML(ST.find(s=>s.t==="quiz"&&s.n===n));return}
   save();$("msg").textContent=`Acertaste ${ok} de ${ch.quiz.length}. Revisa las respuestas en rojo y vuelve a intentarlo.`;
 }
 
+document.querySelectorAll("img[data-i]").forEach(m=>{m.src=IMG[m.dataset.i]});
+$("who").value=S.name||"";
+$("who").addEventListener("input",e=>{S.name=e.target.value;save()});
+new IntersectionObserver(([e])=>$("hud").classList.toggle("on",!e.isIntersecting)).observe($("dash"));
 drawMap();head();
+if(ST.some(isDone))setTimeout(()=>$("fig").scrollIntoView({block:"center"}),200);
 </script>
 </body>
 </html>
