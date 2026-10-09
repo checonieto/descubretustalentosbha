@@ -119,6 +119,9 @@ textarea{min-height:70px;resize:vertical}
 .win{text-align:center;padding:10px 0}
 .win .big{font-size:4rem}
 .tlogo{background:#fff;color:#0b1f4b;border-radius:10px;padding:7px 11px;font:800 .8rem/1.1 "Trebuchet MS",sans-serif;text-align:center;letter-spacing:.5px}
+.foto{margin:10px 0}
+.foto img{width:100%;max-height:400px;object-fit:contain;background:var(--mist);border-radius:14px;border:3px solid var(--navy);display:block}
+.foto-ph{border:3px dashed var(--navy);border-radius:14px;background:var(--mist);color:var(--navy);text-align:center;padding:26px 10px;font:.9rem "Trebuchet MS",sans-serif;margin:10px 0}
 .reset{display:block;margin:22px auto 0}
 .pop{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:30px;font:700 .95rem "Trebuchet MS",sans-serif;transition:transform .4s;z-index:60;text-align:center;max-width:90vw}
 .pop.show{transform:translateX(-50%) translateY(0)}
@@ -142,117 +145,170 @@ textarea{min-height:70px;resize:vertical}
   </section>
   <div class="board" id="board">
     <div id="layer"></div>
-    <div class="fig" id="fig"><div class="in"><img data-i="fig" alt="Bicente" onerror="this.replaceWith(document.createTextNode('🦬'))"></div></div>
+    <div class="fig" id="fig"><div class="in"><img data-i="fig" alt="Bicente" onerror="figFail(this)"></div></div>
   </div>
   <button class="btn alt reset" data-reset>Reiniciar mi progreso</button>
+  <button class="btn alt reset" data-imgs style="margin-top:10px">🖼️ Cargar imágenes (instructor)</button>
 </main>
 <div class="overlay" id="ov"><div class="panel" id="panel" tabindex="-1"><button class="xbtn" data-close aria-label="Cerrar">✕</button><div id="pbody"></div></div></div>
 <div class="pop" id="pop" role="status"></div>
 
 <script>
+const SRC="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
 /* ===== VIDEOS: pega aquí los links de YouTube (déjalos vacíos para mostrar el espacio reservado) ===== */
-const VIDEOS = { 1:"", 2:"", 3:"", 4:"", final:"" };
+const VIDEOS = { 0:"", 1:"", 2:"", 3:"", 4:"", final:"" };
 
 /* ===== IMÁGENES: cambia aquí las rutas si tus archivos están en otra carpeta o tienen otro nombre ===== */
-const IMG = { logo:"logobha.jpg", fig:"figurinbha.jpg" };
-function noLogo(el){const s=document.createElement("b");s.className="tlogo";s.innerHTML="BIG HORN<br>ACADEMY";el.replaceWith(s)}
+const IMG = { logo:"logobha.jpg", fig:"figurinbha.jpg", bien:"bicentebienvenida.jpg", c1:"bicentecapitulo1.jpg", c2:"bicentecapitulo2.jpg", c3:"bicentecapitulo3.jpg", c4:"bicentecapitulo4.jpg" };
+const PHN={bien:"bicentebienvenida.jpg",c1:"bicentecapitulo1.jpg",c2:"bicentecapitulo2.jpg",c3:"bicentecapitulo3.jpg",c4:"bicentecapitulo4.jpg"};
+const IMGKEYS={logobha:"logo",figurinbha:"fig",bicentebienvenida:"bien",bicentecapitulo1:"c1",bicentecapitulo2:"c2",bicentecapitulo3:"c3",bicentecapitulo4:"c4"};
+function noLogo(el){el.style.display="none";const n=el.nextElementSibling;if(!n||!n.classList.contains("tlogo")){const s=document.createElement("b");s.className="tlogo";s.innerHTML="BIG HORN<br>ACADEMY";el.after(s)}}
+function figFail(el){el.style.display="none";if(!el.nextElementSibling||!el.nextElementSibling.classList.contains("figfb")){const s=document.createElement("span");s.className="figfb";s.textContent="🦬";el.after(s)}}
+function applyImgs(){document.querySelectorAll("img[data-i]").forEach(m=>{const n=m.nextElementSibling;if(n&&(n.classList.contains("tlogo")||n.classList.contains("figfb")))n.remove();m.style.display="";m.src=IMG[m.dataset.i]})}
+const photo=k=>`<figure class="foto"><img src="${IMG[k]}" alt="Bicente" onerror="photoFail(this,'${PHN[k]}')"></figure>`;
+function photoFail(el,n){const d=document.createElement("div");d.className="foto-ph";d.innerHTML="📷<br><b>Aquí va la foto de Bicente</b><br><small>"+n+"</small>";el.replaceWith(d)}
+function openImgs(){
+  $("pbody").innerHTML=`<h2>🖼️ Imágenes del curso</h2><p class="sub">Para el instructor: selecciona a la vez los 7 archivos (<b>logobha</b>, <b>figurinbha</b>, <b>bicentebienvenida</b> y <b>bicentecapitulo1</b> a <b>4</b>). Se verán de inmediato. Luego descarga el HTML con las imágenes incrustadas: ese archivo ya no necesita carpetas aparte.</p>
+  <input type="file" id="imgf" accept="image/*" multiple><div class="msg" id="imgst" style="color:var(--navy)"></div>
+  <button class="btn" data-export>Descargar HTML con las imágenes incrustadas</button>`;
+  $("ov").classList.add("on");document.body.style.overflow="hidden";$("panel").focus();
+}
+function loadImgs(files){
+  const ok=[],bad=[];let pend=files.length;
+  [...files].forEach(fl=>{
+    const k=IMGKEYS[fl.name.toLowerCase().replace(/\.[^.]+$/,"")];
+    if(!k){bad.push(fl.name);if(!--pend)done();return}
+    const r=new FileReader();r.onload=()=>{IMG[k]=r.result;ok.push(fl.name);if(!--pend)done()};r.readAsDataURL(fl);
+  });
+  function done(){applyImgs();$("imgst").innerHTML=(ok.length?"✔ Cargadas: "+ok.join(", ")+". ":"")+(bad.length?"No reconocidas: "+bad.join(", ")+".":"")}
+}
+function exportHTML(){
+  const out=SRC.replace(/const IMG = \{[^\n]*\};/,()=>"const IMG = "+JSON.stringify(IMG)+";");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([out],{type:"text/html"}));a.download="descubre-tus-talentos.html";document.body.appendChild(a);a.click();a.remove();
+}
 
 /* ===== CONTENIDO ===== */
-// k: t=texto corto, a=párrafo, s=lista, m=selección múltiple, c=casilla, x=reto de 3 segundos
-const T=["Adaptable","Buen oyente","Constante","Creativo","Empático","Minucioso","Organizado","Resolutivo"];
-const AREAS=["Administración y negocios","Servicios a la comunidad (salud, educación, etc.)","Oficios técnicos y construcción","Tecnología e informática","Producción y manufactura","Ventas y atención al cliente","Agricultura y trabajo al aire libre","Transporte y logística","Arte, comunicación y diseño"];
+// k: t=texto corto, a=párrafo, s=lista, m=selección múltiple, c=casilla, x=reto de 3 segundos · opt:true = opcional
+// b = explicación de Bicente · ul = lista [negrita, texto] · note = regla del juego
+const TAL=["adaptable","buen oyente","confiable","constante","creativo","curioso","decidido","disciplinado","empático","enseñable","generoso","honesto","leal","minucioso","negociador","observador","optimista","organizado","paciente","perseverante","práctico","resolutivo","respetuoso","responsable","servicial","trabajador","con don de gentes","con sentido del humor","con visión de futuro"];
+const AREAS=["Administración y negocios: gerencia, contabilidad, mercadotecnia, recursos humanos","Servicios a la comunidad: salud, educación, cuidado infantil, seguridad pública","Oficios técnicos y construcción: electricidad, plomería, mecánica, carpintería","Tecnología e informática: programación, soporte técnico, diseño digital","Producción y manufactura: operación de maquinaria, ensamblaje, control de calidad","Ventas y atención al cliente: ventas al detalle, bienes raíces, servicio al cliente","Agricultura y trabajo al aire libre: ganadería, agricultura, silvicultura","Transporte y logística: manejo, distribución, almacenaje","Arte, comunicación y diseño: diseño gráfico, redacción, fotografía, música"];
 const C=[
-{n:1,t:"Conoce Tus Talentos",ic:"🎒",badge:"Mochila Abierta",
- vid:"Bicente te da la bienvenida a Big Horn Academy.",
- say:"Antes de decidir a dónde vas, necesitas saber qué llevas en tu equipaje.",
+{n:0,t:"Bienvenida al Viaje",ic:"🏕️",badge:"Mochila Lista",
+ vid:"Bicente, con su bufanda y sus lentes, te da la bienvenida frente a las montañas y la pradera.",
+ say:"Soy Bicente el Bisonte y seré tu maestro y guía en este viaje de autoconocimiento. Cada quien nace con una mochila propia llena de dones.",
  cards:[
- {id:"1.1",t:"El Retrato de Tu Mochila",tp:"Reto de Autoconocimiento",d:"Ejercicio de entrada: ¿quién eres hoy?",f:[
-  {k:"a",l:"5 palabras que te describan",p:"Ej. leal, curioso, paciente..."},
-  {k:"a",l:"3 pasatiempos o intereses que disfrutas"},
-  {k:"a",l:"3 trabajos, oficios o tareas que has hecho (con o sin paga)"},
-  {k:"t",l:"Un valor que jamás negociarías",p:"Ej. honestidad, familia, fe"}]},
- {id:"1.2",t:"El Poder de Tus Logros",tp:"Desafío de Extracción de Talentos",d:"Elige 3 logros de los que te sientes orgulloso (académicos, capacitaciones o personales) e identifica el talento que te ayudó a lograrlos.",chips:T,f:[
-  {k:"t",l:"Logro 1"},{k:"t",l:"Talento que lo hizo posible"},
-  {k:"t",l:"Logro 2"},{k:"t",l:"Talento que lo hizo posible"},
-  {k:"t",l:"Logro 3"},{k:"t",l:"Talento que lo hizo posible"}]},
- {id:"1.3",t:"Yo Soy, Yo Tengo, Yo Puedo",tp:"Afirmación y Expresión Oral",d:"Convierte tus talentos en frases firmes y enérgicas.",f:[
-  {k:"t",l:"Yo soy...",p:"Yo soy una persona paciente y empática"},
-  {k:"t",l:"Yo tengo...",p:"Yo tengo facilidad para organizar proyectos y liderar"},
-  {k:"t",l:"Yo puedo...",p:"Yo puedo resolver problemas con calma bajo presión"},
-  {k:"c",l:"Las repetí en voz alta 3 veces, frente al espejo o a un compañero"}]},
- {id:"1.4",t:"¡Reto Relámpago! Yo en 3 Segundos",tp:"Micro-Reto de Velocidad y Confianza",d:"Tienes 3 segundos: ¿cuál es tu súper talento principal?",f:[{k:"x",l:"Mi súper talento es...",p:"¡Resolver problemas! ¡Escuchar con empatía!"}]}],
+ {id:"0.1",ph:"bien",t:"Una Palabra de Bicente Antes de Empezar",tp:"Encuadre y Propósito del Curso",
+  b:"Cada quien nace con una mochila propia llena de dones. Mi trabajo aquí es ayudarte a abrirla, a mirar lo que ya traes, y a decidir hacia dónde caminar con eso.",
+  d:"Bienvenido a este manual y curso interactivo. El objetivo principal de este espacio es el autoconocimiento, para ayudarte a encontrar y construir tu camino profesional. Aquí caminaremos juntos por cuatro etapas estratégicas:",
+  ul:[["Conoce Tus Talentos:","descubrirás las cualidades y dones que ya llevas dentro."],["Elige Tu Camino Profesional:","explorarás profesiones, investigarás opciones y fijarás metas claras."],["Lo Que Ya Tienes vs. Lo Que Necesitas:","harás un inventario honesto y un plan para llenar tus vacíos."],["Construye Tu Red de Contactos:","mapearás a las personas que te apoyarán y abrirán puertas en el camino."]],
+  note:"No hay prisa. Este no es un examen, es un ejercicio de autoconocimiento. Si puedes, comparte tus respuestas en voz alta con un mentor, familiar o amigo; platicar en voz alta vuelve tus ideas más claras y reales.",
+  f:[{k:"t",l:"Persona de confianza con quien compartiré mis respuestas",p:"Un mentor, familiar o amigo",opt:true},
+     {k:"c",l:"Tengo a la mano mi cuaderno o lápiz y estoy listo para recorrer las cuatro etapas"}]}]},
+{n:1,t:"Conoce Tus Talentos",ic:"🎒",badge:"Mochila Abierta",
+ vid:"Bicente junto a la fogata, empacando su mochila de viaje.",
+ say:"Antes de decidir hacia dónde vas, necesitas saber con qué cuentas para el viaje. No puedes empacar bien la maleta si no sabes qué tienes en el clóset.",
+ cards:[
+ {id:"1.1",ph:"c1",t:"Contexto y Tu Retrato Personal",tp:"Explicativa + Reto de Autoconocimiento",
+  b:"Todos cargamos más talento del que creemos. A veces no lo vemos porque lo hemos usado tanto que ya nos parece normal, como el que siempre organiza las reuniones familiares, o el que sin darse cuenta calma los ánimos cuando hay un pleito. Este capítulo te va a ayudar a ponerle nombre a esas cualidades.",
+  d:"Responde con calma cada punto. Recuerda: no hay respuestas correctas ni incorrectas, solo respuestas tuyas.",
+  f:[{k:"a",l:"🖐️ 5 palabras que te describen"},{k:"a",l:"🎨 3 pasatiempos o intereses que disfrutas"},{k:"a",l:"🛠️ 3 trabajos, oficios o tareas que has hecho (con o sin paga)"},{k:"a",l:"🏆 3 logros de los que te sientes orgulloso"},{k:"t",l:"🎓 Un logro académico o de capacitación alcanzado"},{k:"t",l:"🛡️ Un valor que jamás negociarías",p:"Honestidad, familia, fe, etc."}]},
+ {id:"1.2",t:"De Cada Logro, Saca el Talento",tp:"Extracción de Fortalezas",
+  b:"Tus victorias pasadas dejan pistas. No importa si el logro fue grande o pequeño; lo importante es la cualidad interna que usaste para conseguirlo.",
+  d:"Toma tres logros o trabajos que anotaste en la tarjeta anterior. Pregúntate: ¿qué cualidad mía hizo posible este logro? Puedes apoyarte en estas palabras o agregar las tuyas:",chips:TAL,
+  f:[{k:"t",l:"Logro 1"},{k:"t",l:"Talentos empleados en el logro 1"},{k:"t",l:"Logro 2"},{k:"t",l:"Talentos empleados en el logro 2"},{k:"t",l:"Logro 3"},{k:"t",l:"Talentos empleados en el logro 3"}]},
+ {id:"1.3",t:"Dinámica «Soy, Tengo, Puedo»",tp:"Afirmación y Empoderamiento Oral",
+  b:"Cuando digas estas frases en voz alta, dilas como si ya las creyeras. Porque son ciertas; solo hace falta que te las repitas hasta que las sientas tuyas.",
+  d:"Escoge tres de los talentos que identificaste y conviértelos en frases cortas y firmes. Practícalas en voz alta:",
+  f:[{k:"t",l:"🦁 Yo soy…",p:"Yo soy una persona constante y observadora"},{k:"t",l:"🎒 Yo tengo…",p:"Yo tengo facilidad para resolver conflictos en equipo"},{k:"t",l:"⚡ Yo puedo…",p:"Yo puedo aprender herramientas digitales rápidamente"},{k:"c",l:"Las dije en voz alta, con firmeza"}]},
+ {id:"1.4",t:"¡Desafío Relámpago! «Yo en 3 Segundos»",tp:"Micro-reto de Autoconfianza",
+  b:"En una entrevista o en la vida, a veces tienes solo unos segundos para transmitir tu esencia. ¡Demuestra tu agilidad!",
+  d:"Misión: activa el temporizador de 3 segundos y responde de inmediato, sin pensarlo demasiado: ¿cuál es tu mayor fortaleza en una sola frase?",
+  f:[{k:"x",l:"¡Yo soy…! (tu súper talento)",p:"¡Yo soy [tu súper talento]!"}]}],
  quiz:[
- {q:"¿Cuál es el objetivo principal de analizar tus logros pasados?",o:["Contar cuántos diplomas tienes guardados.","Descubrir y extraer los talentos y cualidades que hicieron posible esos logros.","Demostrar a los demás que eres superior."],a:1},
- {q:"Según Bicente, las frases «Yo soy, Tengo, Puedo» deben pronunciarse:",o:["Con timidez para no parecer presumido.","Solo en exámenes formales.","En voz alta y con firmeza, creyendo que son ciertas."],a:2}]},
+ {q:"¿Por qué a veces nos cuesta trabajo identificar nuestros propios talentos?",o:["Porque no tenemos ninguno.","Porque los hemos usado tanto que nos parecen algo normal y cotidiano.","Porque solo los maestros pueden verlos."],a:1},
+ {q:"¿Cuál es el objetivo principal del ejercicio «Soy, Tengo, Puedo»?",o:["Memorizar un texto para un examen escrito.","Declarar con firmeza y en voz alta nuestras fortalezas para prepararnos para entrevistas y para la vida.","Presumir con los demás."],a:1},
+ {q:"¿Cuál es el objetivo principal de analizar tus logros pasados?",o:["Contar cuántos diplomas tienes guardados.","Descubrir las cualidades que hicieron posible esos logros.","Demostrar a los demás que eres superior."],a:1}]},
 {n:2,t:"Elige Tu Camino Profesional",ic:"🧭",badge:"Brújula Firme",
- vid:"Bicente te ayuda a explorar ocupaciones y fijar metas.",
+ vid:"Bicente camina firme por la pradera bajo un cielo nublado, pero decidido.",
  say:"Un bisonte no corre hacia cualquier lado cuando hay tormenta; camina derecho hacia ella, porque sabe que así se cruza más rápido.",
  cards:[
- {id:"2.1",t:"Mapa de Exploración de Ocupaciones",tp:"Selección Estratégica",d:"Marca las 2 o 3 áreas laborales que más te atraigan.",f:[{k:"m",l:"Áreas que me atraen",o:AREAS,min:2,max:3}]},
- {id:"2.2",t:"Ficha de Investigación de Tu Profesión Meta",tp:"Misión de Investigación",d:"Elige un oficio o profesión e investiga.",f:[
-  {k:"t",l:"Profesión que investigo"},
-  {k:"a",l:"1. ¿Cuáles son las actividades del día a día?"},
-  {k:"a",l:"2. ¿Por qué te interesa este campo?"},
-  {k:"t",l:"3. ¿Está en crecimiento, estable o en declive en tu zona?"},
-  {k:"t",l:"4. ¿Cuál es el rango salarial aproximado?"},
-  {k:"a",l:"5. ¿Qué estudios, certificaciones o experiencias se requieren?"}]},
- {id:"2.3",t:"La Entrevista Informativa",tp:"Rol Play / Acción Práctica",d:"Imagina que entrevistas a alguien del área. Escribe tus 3 preguntas clave.",f:[
-  {k:"t",l:"Pregunta 1",p:"¿Cómo es un día típico en tu trabajo?"},
-  {k:"t",l:"Pregunta 2",p:"¿Qué habilidades marcan la diferencia entre alguien bueno y alguien excelente?"},
-  {k:"t",l:"Pregunta 3",p:"¿Qué consejo le darías a alguien que apenas empieza?"}]},
- {id:"2.4",t:"La Brújula de Bicente",tp:"Reto de Planeación",d:"Define tus horizontes con precisión.",f:[
-  {k:"a",l:"Meta a corto plazo (próximos 6 a 12 meses)"},
-  {k:"a",l:"Meta a largo plazo (3 a 5 años)"}]}],
+ {id:"2.1",ph:"c2",t:"Exploración de Ocupaciones",tp:"Selección y Descubrimiento",
+  b:"Si ya sabes en qué campo quieres trabajar, usa esta sección para investigarlo. Si aún no lo sabes, explora estas familias de ocupaciones hasta que una encienda tu chispa.",
+  d:"Marca las 2 o 3 categorías que más te llamen la atención:",
+  f:[{k:"m",l:"Áreas que me atraen",o:AREAS,min:2,max:3}]},
+ {id:"2.2",t:"Ficha de Investigación de Tu Profesión Meta",tp:"Misión de Investigación de Campo",
+  b:"No elijas a ciegas. Investiga la realidad del trabajo antes de dar el salto.",
+  d:"Escribe el nombre del oficio o profesión que elegiste e investiga:",
+  f:[{k:"t",l:"Oficio o profesión que elegí"},{k:"a",l:"Actividades y responsabilidades del día a día"},{k:"a",l:"¿Por qué me interesa este campo?"},{k:"t",l:"¿Está creciendo, estable o en declive en mi zona?"},{k:"t",l:"Rango salarial aproximado"},{k:"a",l:"Estudios, certificaciones o experiencia necesarios"}]},
+ {id:"2.3",t:"Guión para Entrevista Informativa",tp:"Acción Social y Simulación",
+  b:"Una entrevista informativa es simplemente una plática con alguien que ya trabaja en el campo que te interesa. No estás pidiendo empleo; estás pidiendo su perspectiva.",
+  d:"Usa o adapta estas preguntas para hablar con un profesional:",
+  ul:[["1.","¿Cómo es un día típico en tu trabajo?"],["2.","¿Qué es lo que más disfrutaste y qué es lo más difícil?"],["3.","¿Qué habilidades marcan la diferencia entre alguien bueno y alguien excelente en este campo?"],["4.","¿Qué consejo le darías a alguien que apenas empieza?"]],
+  f:[{k:"t",l:"¿A quién me gustaría entrevistar?"},{k:"t",l:"Una pregunta propia que agregaría"}]},
+ {id:"2.4",t:"Fija Tus Metas Profesionales",tp:"Planeación Estratégica",
+  b:"Una meta concreta jala más que diez metas a medias. Elige una dirección y camina hacia ella con todo tu peso.",
+  d:"Misión: define tus compromisos con claridad.",
+  f:[{k:"a",l:"📍 Meta a corto plazo (próximos 6 a 12 meses)"},{k:"a",l:"🏔️ Meta a largo plazo (3 a 5 años)"}]}],
  quiz:[
+ {q:"Según la enseñanza de Bicente sobre la tormenta, ¿cuál es la mejor actitud al elegir carrera?",o:["Esperar a que los problemas se resuelvan solos.","Caminar con dirección clara hacia la meta para cruzar los obstáculos más rápido.","Cambiar de rumbo constantemente según el clima."],a:1},
  {q:"¿Qué es una entrevista informativa?",o:["Una entrevista de trabajo formal para conseguir empleo de inmediato.","Una conversación con un profesional para aprender de su experiencia y conocer el campo.","Un examen oral evaluado por Bicente."],a:1},
  {q:"¿Por qué es crucial establecer metas específicas a corto y largo plazo?",o:["Porque una meta concreta tiene más fuerza de atracción y evita perder tiempo dando vueltas.","Porque es obligatorio para graduarse del colegio.","Para cambiar de opinión todos los días."],a:0}]},
 {n:3,t:"Lo Que Ya Tienes vs. Lo Que Necesitas",ic:"🌊",badge:"Cruzando el Río",
- vid:"Bicente te acompaña a hacer tu inventario de habilidades.",
- say:"No te avergüences de lo que todavía no sabes hacer. Yo tampoco nací sabiendo cruzar el río: lo aprendí observando a los que iban adelante.",
+ vid:"Bicente observa la orilla de un río ancho.",
+ say:"No te avergüences de lo que todavía no sabes hacer. Yo tampoco nací sabiendo cruzar el río... lo aprendí observando a los que iban adelante.",
  cards:[
- {id:"3.1",t:"Inventario Honestísimo de Habilidades",tp:"Tarjeta Diagnóstico",d:"Para tu profesión elegida, anota un requisito clave.",f:[
-  {k:"t",l:"Habilidad o requisito",p:"Excel avanzado, Primeros Auxilios, licencia de conducir..."},
-  {k:"s",l:"¿Ya la tengo?",o:["Sí","No"]},
-  {k:"a",l:"Cómo la voy a desarrollar"},
-  {k:"t",l:"Fecha meta",p:"Ej. diciembre 2026"}]},
- {id:"3.2",t:"Tu Plan de Acción Semanal",tp:"Reto de Ejecución Inmediata",d:"El paso de los bisontes: elige una habilidad clave que te falta.",f:[
-  {k:"t",l:"Habilidad a desarrollar"},
-  {k:"a",l:"Acción concreta esta semana",p:"Un curso, un tutorial, practicar una técnica"},
-  {k:"t",l:"¿Quién me puede ayudar?"}]},
- {id:"3.3",t:"Yo Puedo Aprender",tp:"Cambio de Mentalidad",d:"Cambia «No sé hacer esto» por «Todavía no lo sé hacer, pero lo voy a aprender haciendo [acción]».",f:[
-  {k:"t",l:"Compromiso de aprendizaje 1",p:"Todavía no sé..., pero lo voy a aprender haciendo..."},
-  {k:"t",l:"Compromiso de aprendizaje 2"}]}],
+ {id:"3.1",ph:"c3",t:"Inventario Honestísimo de Habilidades",tp:"Diagnóstico y Mapa de Brechas",
+  b:"Hacer un inventario honesto no busca desanimarte; al contrario, te da un mapa claro de por dónde empezar a construir.",
+  d:"Anota en cada fila una habilidad o requisito que tu profesión elegida pida e indica tu estado actual. Ejemplo: manejo de hoja de cálculo · No · tomar un curso en línea gratuito · 15 de noviembre. La fila 1 es obligatoria; las otras dos son opcionales.",
+  f:[{k:"t",l:"Fila 1 · Habilidad o requisito"},{k:"s",l:"Fila 1 · ¿Ya la tengo?",o:["Sí","No"]},{k:"t",l:"Fila 1 · Cómo la voy a desarrollar"},{k:"t",l:"Fila 1 · Fecha meta"},
+     {k:"t",l:"Fila 2 · Habilidad o requisito",opt:true},{k:"s",l:"Fila 2 · ¿Ya la tengo?",o:["Sí","No"],opt:true},{k:"t",l:"Fila 2 · Cómo la voy a desarrollar",opt:true},{k:"t",l:"Fila 2 · Fecha meta",opt:true},
+     {k:"t",l:"Fila 3 · Habilidad o requisito",opt:true},{k:"s",l:"Fila 3 · ¿Ya la tengo?",o:["Sí","No"],opt:true},{k:"t",l:"Fila 3 · Cómo la voy a desarrollar",opt:true},{k:"t",l:"Fila 3 · Fecha meta",opt:true}]},
+ {id:"3.2",t:"Tu Plan de Acción Semanal",tp:"Reto Gamificado de Ejecución",
+  b:"El vacío entre lo que tienes y lo que necesitas no se cruza de un salto. Se cruza paso por paso, con un plan en la mano.",
+  d:"Para la habilidad más urgente que te falte, diseña un plan para ESTA semana:",
+  f:[{k:"t",l:"🛠️ Habilidad a desarrollar"},{k:"a",l:"⚡ Acción esta semana",p:"Un curso, una práctica, una lectura"},{k:"t",l:"🤝 Quién me puede ayudar"}]},
+ {id:"3.3",t:"Reencuadre «Yo Puedo Aprender»",tp:"Mentalidad de Crecimiento",
+  b:"Nadie nace sabiendo. El talento es una semilla, pero la práctica es el agua.",
+  d:"Escribe 2 frases cambiando la duda por capacidad de aprendizaje: «Aunque hoy no sé [habilidad X], yo puedo aprenderlo haciendo [acción X]».",
+  f:[{k:"t",l:"Frase 1",p:"Aunque hoy no sé…, yo puedo aprenderlo haciendo…"},{k:"t",l:"Frase 2"}]}],
  quiz:[
+ {q:"¿Cómo se cruza la brecha entre lo que ya sabes y lo que te falta aprender?",o:["Con un salto mágico de la noche a la mañana.","Paso a paso, mediante un plan de acción concreto e incremental.","Esperando a que las empresas bajen sus requisitos."],a:1},
  {q:"¿Cuál es el objetivo de identificar la brecha entre lo que tienes y lo que necesitas?",o:["Demostrar que no estás capacitado y abandonar.","Tener un mapa claro para trazar acciones concretas y cerrar la brecha paso a paso.","Sentir culpa por no saberlo todo desde el principio."],a:1},
  {q:"¿Cómo se transforma la frase «No sé hacer esto»?",o:["«Nunca voy a poder hacerlo».","«Todavía no lo sé hacer, pero lo voy a aprender haciendo».","«Que lo haga otra persona»."],a:1}]},
 {n:4,t:"Construye Tu Red de Contactos",ic:"🦬",badge:"Manada Unida",
- vid:"Bicente te presenta el poder de la manada.",
+ vid:"Bicente camina junto a una gran manada de bisontes en la pradera.",
  say:"Tu red de contactos es tu manada: la gente que te cuida las espaldas mientras avanzas.",
  cards:[
- {id:"4.1",t:"Mapeo de la Manada",tp:"Lluvia de Ideas de Redes",d:"Anota al menos 1 o 2 personas en cada categoría.",f:[
-  {k:"t",l:"Familiares y parientes"},{k:"t",l:"Amigos actuales y del pasado"},
-  {k:"t",l:"Compañeros de trabajo, jefes o expatrones"},
-  {k:"t",l:"Maestros, mentores o líderes comunitarios"},
-  {k:"t",l:"Personas de hobbies, deportes o actividades"}]},
- {id:"4.2",t:"Clasificador A / B / C",tp:"Organización Estratégica",d:"Asigna una prioridad a tus contactos.",f:[
-  {k:"t",l:"Prioridad A: quienes te pueden ayudar directamente"},
-  {k:"t",l:"Prioridad B: quienes tal vez puedan ayudarte"},
-  {k:"t",l:"Prioridad C: quienes te pueden conectar con alguien más"}]},
- {id:"4.3",t:"Las 3 Preguntas de Oro",tp:"Guía para Conversaciones",d:"1) ¿Sabes de alguna vacante o oportunidad en el campo que me interesa? 2) ¿Conoces a alguien más con quien valga la pena que hable? 3) ¿Puedo mantenerte al tanto de cómo me va para seguir en contacto?",f:[
-  {k:"t",l:"¿A quién le haré estas 3 preguntas primero?"},
-  {k:"c",l:"Me aprendí las 3 preguntas para cada interacción profesional"}]},
- {id:"4.4",t:"El Mensaje de Gratitud",tp:"Misión de Seguimiento",d:"Escribe una plantilla breve para enviar después de hablar con un contacto.",f:[
-  {k:"a",l:"Un agradecimiento sincero por su tiempo"},
-  {k:"a",l:"Algo específico que conversaron"},
-  {k:"a",l:"Un paso siguiente sugerido o promesa de actualización"}]}],
+ {id:"4.1",ph:"c4",t:"Mapeo de Tu Manada",tp:"Lluvia de Ideas de Relaciones",
+  b:"Sorpresa: ya tienes una red. Solo necesitas organizarla.",
+  d:"Piensa en estos grupos y anota nombres concretos:",
+  f:[{k:"t",l:"👨‍👩‍👧 Familiares y parientes"},{k:"t",l:"🤝 Amigos actuales y de épocas pasadas"},{k:"t",l:"🏢 Compañeros de trabajo, jefes o supervisores"},{k:"t",l:"🏫 Maestros, mentores o líderes comunitarios"},{k:"t",l:"⚽ Personas de pasatiempos, deportes o actividades"}]},
+ {id:"4.2",t:"Clasificador A / B / C y Registro",tp:"Priorización Estratégica",
+  b:"Organizar a tu gente te ayuda a saber a quién contactar primero y cómo pedir ayuda sin abrumar.",
+  d:"Asigna a cada contacto una prioridad:",
+  ul:[["A:","quienes probablemente te puedan ayudar de forma directa."],["B:","quienes tal vez puedan ayudarte."],["C:","quienes te pueden conectar con alguien más."]],
+  f:[{k:"t",l:"Mis contactos A"},{k:"t",l:"Mis contactos B"},{k:"t",l:"Mis contactos C"},
+     {k:"t",l:"Registro de conversaciones · Nombre",opt:true},{k:"t",l:"Registro · Fecha",opt:true},{k:"t",l:"Registro · De qué hablamos",opt:true},{k:"t",l:"Registro · Próximo paso",opt:true}]},
+ {id:"4.3",t:"Las Tres Preguntas que Abren Puertas",tp:"Herramienta de Diálogo y Conexión",
+  b:"En cada conversación con un contacto, no pidas trabajo directamente; haz estas tres preguntas que abren puertas.",
+  d:"Las 3 preguntas de Bicente:",
+  ul:[["1.","¿Sabes de alguna vacante u oportunidad en el campo que me interesa?"],["2.","¿Conoces a alguien más con quien valga la pena que hable?"],["3.","¿Puedo mantenerte al tanto de cómo me va, para seguir en contacto?"]],
+  f:[{k:"t",l:"¿A quién le haré estas 3 preguntas primero?"},{k:"c",l:"Me aprendí las 3 preguntas para cada conversación"}]},
+ {id:"4.4",t:"El Hábitat del Agradecimiento",tp:"Reto de Cierre e Impacto Positivo",
+  b:"Una red de contactos no se construye en un día, se cultiva como el pasto de la pradera: con constancia, un poco cada semana. Y cuando menos lo esperes, ahí está, lista para sostenerte.",
+  d:"Misión: después de hablar con un contacto, envíale un mensaje breve. Escribe aquí tu plantilla:",
+  f:[{k:"a",l:"Algo específico de lo que hablaron"},{k:"a",l:"Mi interés sincero (reafírmalo)"},{k:"a",l:"Siguiente paso o fecha para volver a hablar"}]}],
  quiz:[
+ {q:"¿Por qué compara Bicente a la red de contactos con una manada de bisontes?",o:["Porque todos deben vestir igual.","Porque juntos es más fácil cuidarse las espaldas, ver los peligros y encontrar oportunidades.","Porque hay que viajar únicamente en grupo."],a:1},
  {q:"¿Qué representan los contactos con clasificación «C»?",o:["Contactos que debes descartar de inmediato.","Personas que tal vez no están en tu área laboral, pero te pueden conectar con alguien más.","Contactos prioritarios a los que debes llamar primero."],a:1},
  {q:"¿Por qué es fundamental enviar un mensaje de agradecimiento tras hablar con un contacto?",o:["Porque demuestra educación, genera un impacto positivo y hace que te recuerden con cariño.","Porque es obligatorio por ley.","Para exigirles que te den trabajo rápido."],a:0}]}
 ];
-const FINAL_SAY="¡Lo lograste! Ya recorriste las cuatro etapas: conoces tus talentos, elegiste una dirección, identificaste lo que necesitas y empezaste a construir tu manada. El camino profesional no es una línea recta, es como cruzar la pradera. ¡Gracias por caminar este tramo conmigo!";
+const FINAL_SAY="Ya recorriste los cuatro pasos: conoces tus talentos, elegiste una dirección, sabes qué te falta y empezaste a construir tu manada. Eso ya es más de lo que la mayoría se atreve a hacer. El camino profesional no es una línea recta, es más como cruzar la pradera. ¡Gracias por caminar este tramo conmigo! Nos vemos en el siguiente capítulo de tu historia.";
+const CH=n=>C.find(c=>c.n===n);
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 
 /* ===== ESTADO ===== */
-const KEY="bha_descubre_talentos_v2";
+const KEY="bha_descubre_talentos_v3";
 let S={cards:{},quiz:{},intro:{},grad:false,name:""};
 try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -266,7 +322,7 @@ const ST=[];
 C.forEach(ch=>{
   ST.push({t:"intro",n:ch.n,lb:"Bienvenida",sym:ch.ic});
   ch.cards.forEach(c=>ST.push({t:"card",n:ch.n,card:c,id:c.id,lb:c.t,sym:c.id}));
-  ST.push({t:"quiz",n:ch.n,lb:"Quiz del capítulo "+ch.n,sym:"❓"});
+  if(ch.quiz)ST.push({t:"quiz",n:ch.n,lb:"Quiz del capítulo "+ch.n,sym:"❓"});
 });
 ST.push({t:"final",lb:"Graduación",sym:"🎓"});
 const isDone=s=>s.t==="intro"?!!S.intro[s.n]:s.t==="card"?!!(S.cards[s.id]&&S.cards[s.id].done):s.t==="quiz"?quizOk(s.n):!!S.grad;
@@ -274,21 +330,27 @@ const firstOpen=()=>{const i=ST.findIndex(s=>!isDone(s));return i<0?ST.length-1:
 const xp=()=>ST.reduce((a,s)=>a+(isDone(s)?({intro:XPI,card:XPC,quiz:XPQ,final:XPG})[s.t]:0),0);
 
 function badgeList(){
-  const first=Object.values(S.cards).some(c=>c.done);
+  const cd=id=>!!(S.cards[id]&&S.cards[id].done);
   const perfect=Object.values(S.quiz).some(q=>q.passed&&q.tries===1);
-  const L=[{i:"👣",n:"Primer Paso",g:first}];
-  C.forEach(c=>L.push({i:c.ic,n:c.badge,g:quizOk(c.n)}));
-  L.push({i:"🎯",n:"Sin Errores",g:perfect},{i:"🎓",n:"Bisonte Graduado",g:S.grad});
-  return L;
+  return [
+   {i:"🏕️",n:"Mochila Lista",g:cd("0.1")},
+   {i:"🎒",n:CH(1).badge,g:quizOk(1)},
+   {i:"🗣️",n:"Voz Firme",g:cd("1.3")&&cd("1.4")},
+   {i:"🧭",n:CH(2).badge,g:quizOk(2)},
+   {i:"🗺️",n:"Plan en Mano",g:cd("2.4")&&cd("3.2")},
+   {i:"🌊",n:CH(3).badge,g:quizOk(3)},
+   {i:"🦬",n:CH(4).badge,g:quizOk(4)},
+   {i:"🎯",n:"Sin Errores",g:perfect},
+   {i:"🎓",n:"Bisonte Graduado",g:!!S.grad}];
 }
 function pop(t){const p=$("pop");p.textContent=t;p.classList.add("show");clearTimeout(pop.t);pop.t=setTimeout(()=>p.classList.remove("show"),2600)}
 
 /* ===== MAPA ===== */
-const ZONES=C.map((c,k)=>({i:c.ic,s:"Capítulo "+c.n,t:c.t,
-  e:[["🌾","🌿","🪨","☁️"],["🌲","⛰️","💨","🌲"],["🌊","🪵","🐟","💧"],["🦬","🌾","🦬","🌄"]][k],
-  bg:["linear-gradient(#f6f8fd,#e6edfa)","linear-gradient(#e6edfa,#d3def4)","linear-gradient(#d3def4,#bccbec)","linear-gradient(#bccbec,#e6edfa)"][k]}))
+const ZB=[["linear-gradient(#f6f8fd,#e9eefa)",["⛺","🏔️","🌾","🔥"]],["linear-gradient(#e9eefa,#e1e9f8)",["🌾","🌿","🪨","☁️"]],["linear-gradient(#e1e9f8,#d3def4)",["🌲","⛰️","💨","🌲"]],["linear-gradient(#d3def4,#bccbec)",["🌊","🪵","🐟","💧"]],["linear-gradient(#bccbec,#e6edfa)",["🦬","🌾","🦬","🌄"]]];
+const ZONES=C.map((c,k)=>({i:c.ic,s:c.n?"Capítulo "+c.n:"Módulo 0",t:c.t,bg:ZB[k][0],e:ZB[k][1]}))
   .concat([{i:"🎓",s:"Meta final",t:"Graduación en la cima",e:["🏔️","⭐","🌄","⭐"],bg:"linear-gradient(#e6edfa,#0b1f4b 35%,#05070d)"}]);
-const LV=[[0,"Cría de Bisonte"],[50,"Caminante"],[130,"Explorador"],[220,"Guía de la Manada"],[320,"Bisonte Graduado"]];
+const MX=ST.reduce((a,s)=>a+({intro:XPI,card:XPC,quiz:XPQ,final:XPG})[s.t],0),NQ=C.filter(c=>c.quiz).length;
+const LV=[[0,"Cría de Bisonte"],[Math.round(MX*.16),"Caminante"],[Math.round(MX*.4),"Explorador"],[Math.round(MX*.7),"Guía de la Manada"],[MX,"Bisonte Graduado"]];
 let figIdx=firstOpen(),G=null;
 
 function geo(){
@@ -332,7 +394,7 @@ function drawMap(){
   h+=`<svg width="${G.w}" height="${G.h}" style="position:absolute;left:0;top:0" fill="none" stroke-linecap="round" aria-hidden="true">${bd}${fl}${dz}</svg>`;
   h+=ST.map((s,i)=>{
     const st=isDone(s)?"done":i===cur?"cur":i>cur?"lock":"",side=G.pos[i].x>G.w/2?"l":"r";
-    const sm=s.t==="intro"?"Capítulo "+s.n+" · video":s.t==="card"?"Tarjeta "+s.id:s.t==="quiz"?"Quiz del capítulo "+s.n:"Meta final";
+    const sm=s.t==="intro"?(s.n?"Capítulo "+s.n:"Módulo 0")+" · video":s.t==="card"?"Tarjeta "+s.id:s.t==="quiz"?"Quiz del capítulo "+s.n:"Meta final";
     return `<button class="node ${s.t==="quiz"?"quiz":s.t==="final"?"final":""} ${st}" data-s="${i}" style="left:${G.pos[i].x}px;top:${G.pos[i].y}px" aria-label="${esc(s.lb)}${st==="lock"?" (bloqueada)":""}"><span class="sym">${s.sym}</span><span class="nl ${side}"><small>${sm}</small>${esc(s.lb)}</span></button>`}).join("");
   $("layer").innerHTML=h;placeFig(false);
 }
@@ -354,7 +416,7 @@ function head(){
    `<div class="tile"><svg class="ring" width="74" height="74" viewBox="0 0 74 74" aria-hidden="true"><circle cx="37" cy="37" r="30" fill="none" stroke="#ffffff30" stroke-width="8"/><circle cx="37" cy="37" r="30" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pc/100)}" transform="rotate(-90 37 37)"/><text x="37" y="42" text-anchor="middle">${pc}%</text></svg><div><small>Camino recorrido</small><b>${d}/${ST.length}</b></div></div>`+
    `<div class="tile"><div><small>Nivel</small><b style="font-size:1.05rem">${LV[li][1]}</b><div class="bar"><i style="width:${lp}%"></i></div></div></div>`+
    `<div class="tile"><div><small>Puntos de experiencia</small><b>${x} XP</b></div></div>`+
-   `<div class="tile"><div><small>Tarjetas · Quizzes</small><b>${cd}/${nc} · ${qd}/${C.length}</b></div></div>`;
+   `<div class="tile"><div><small>Tarjetas · Quizzes</small><b>${cd}/${nc} · ${qd}/${NQ}</b></div></div>`;
   $("medals").innerHTML=badgeList().map(b=>`<div class="medal ${b.g?"got":""}"><div class="c"><span>${b.i}</span></div>${esc(b.n)}</div>`).join("");
   $("lead").textContent=$("hlead").textContent=ST.every(isDone)?"¡Completaste todo el camino!":"Siguiente estación: "+ST[firstOpen()].lb;
 }
@@ -370,7 +432,7 @@ function videoBlock(key,caption){
 const bicente=t=>`<div class="bicente"><span class="av"><img src="${IMG.fig}" alt="" onerror="this.replaceWith(document.createTextNode('🦬'))"></span><span>«${esc(t)}» <b>— Bicente</b></span></div>`;
 function fieldHTML(card,f,i){
   const v=((S.cards[card.id]||{}).v||{})[i],id=`${card.id}_${i}`;
-  const L=`<label class="f" for="${id}">${esc(f.l)}</label>`,a=`id="${id}" data-c="${card.id}" data-i="${i}"`;
+  const L=`<label class="f" for="${id}">${esc(f.l)}${f.opt?" (opcional)":""}</label>`,a=`id="${id}" data-c="${card.id}" data-i="${i}"`;
   if(f.k==="t")return L+`<input type="text" ${a} placeholder="${esc(f.p||"")}" value="${esc(v||"")}">`;
   if(f.k==="a")return L+`<textarea ${a} placeholder="${esc(f.p||"")}">${esc(v||"")}</textarea>`;
   if(f.k==="s")return L+`<select ${a}><option value="">Elige...</option>${f.o.map(o=>`<option ${v===o?"selected":""}>${o}</option>`).join("")}</select>`;
@@ -380,18 +442,18 @@ function fieldHTML(card,f,i){
 }
 function findCard(id){for(const c of C)for(const k of c.cards)if(k.id===id)return k}
 function stHTML(s){
-  if(s.t==="intro"){const ch=C[s.n-1];
-    return `<h2>${ch.ic} Capítulo ${ch.n}: ${esc(ch.t)}</h2><p class="sub">${esc(ch.vid)}</p>${videoBlock(ch.n,"Video "+ch.n+" · "+ch.t)}${bicente(ch.say)}<button class="btn" data-intro="${ch.n}">${S.intro[ch.n]?"Seguir adelante":"¡Vamos, Bicente!"}</button>`}
+  if(s.t==="intro"){const ch=CH(s.n);
+    return `<h2>${ch.ic} ${ch.n?"Capítulo "+ch.n:"Módulo 0"}: ${esc(ch.t)}</h2><p class="sub">${esc(ch.vid)}</p>${videoBlock(ch.n,"Video "+ch.n+" · "+ch.t)}${bicente(ch.say)}<button class="btn" data-intro="${ch.n}">${S.intro[ch.n]?"Seguir adelante":"¡Vamos, Bicente!"}</button>`}
   if(s.t==="card"){const c=s.card,d=S.cards[c.id]&&S.cards[c.id].done;
     return `<div class="card"><span class="tag">Tarjeta ${c.id}</span><span class="tag" style="background:var(--navy)">${esc(c.tp)}</span>${d?'<span class="tag">✔ completada</span>':""}
-    <h3>${esc(c.t)}</h3><p>${esc(c.d)}</p>
+    <h3>${esc(c.t)}</h3>${c.ph?photo(c.ph):""}${c.b?bicente(c.b):""}<p>${esc(c.d)}</p>${c.ul?"<ul>"+c.ul.map(x=>`<li><b>${esc(x[0])}</b> ${esc(x[1])}</li>`).join("")+"</ul>":""}${c.note?`<p><b>Regla del juego:</b> ${esc(c.note)}</p>`:""}
     ${c.chips?`<div class="chips">${c.chips.map(x=>`<span class="chip static">${x}</span>`).join("")}<span class="chip static">…y muchos más</span></div>`:""}
     ${c.f.map((f,i)=>fieldHTML(c,f,i)).join("")}
     <button class="btn" data-done="${c.id}">${d?"Actualizar tarjeta":"Completar tarjeta (+"+XPC+" XP)"}</button><div class="msg" id="msg"></div></div>`}
-  if(s.t==="quiz"){const ch=C[s.n-1];
+  if(s.t==="quiz"){const ch=CH(s.n);
     if(quizOk(s.n))return `<div class="win"><div class="big">${ch.ic}</div><h2 style="margin:0">¡Quiz aprobado!</h2><p>Ya tienes la insignia <b>${esc(ch.badge)}</b>.</p><button class="btn" data-close>Seguir el camino</button></div>`;
     return `<h2>❓ Quiz del Capítulo ${ch.n}</h2><p class="sub">Responde todo bien para ganar la insignia <b>${esc(ch.badge)}</b> (+${XPQ} XP). Puedes intentarlo las veces que quieras.</p>
-    ${ch.quiz.map((it,qi)=>`<div class="q"><p>${qi+1}. ${esc(it.q)}</p>${it.o.map((o,oi)=>`<label class="opt" id="o_${qi}_${oi}"><input type="radio" name="q${qi}" value="${oi}"> ${esc(o)}</label>`).join("")}</div>`).join("")}
+    ${ch.quiz.map((it,qi)=>`<div class="q"><p>${qi+1}. ${esc(it.q)}</p>${shuf(it.o.map((o,oi)=>[o,oi])).map(([o,oi])=>`<label class="opt" id="o_${qi}_${oi}"><input type="radio" name="q${qi}" value="${oi}"> ${esc(o)}</label>`).join("")}</div>`).join("")}
     <button class="btn" data-quiz="${ch.n}">Comprobar respuestas</button><div class="msg" id="msg"></div>`}
   return `<h2>🎓 Graduación</h2>${videoBlock("final","Video final · Cierre del curso")}${bicente(FINAL_SAY)}
    ${S.grad?`<div class="cert"><img src="${IMG.logo}" alt="" onerror="noLogo(this)"><p class="ui">Big Horn Academy certifica que</p><h2>${esc(S.name)}</h2><p>completó el curso <b>Descubre Tus Talentos y Tu Camino Profesional</b>:<br>conoce sus talentos, eligió una dirección, identificó lo que necesita y construyó su manada.</p><p class="ui">${new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"})}</p></div><button class="btn noprint" onclick="window.print()">Imprimir certificado</button>`
@@ -420,7 +482,7 @@ document.addEventListener("click",e=>{
   }
   else if(t.hasAttribute("data-go")){const i=firstOpen();hopTo(i,()=>openStation(i))}
   else if(t.hasAttribute("data-close"))closeModal();
-  else if(D.intro){S.intro[D.intro]=true;save();pop("🦬 ¡Capítulo "+D.intro+" en marcha! +"+XPI+" XP");closeModal()}
+  else if(D.intro){S.intro[D.intro]=true;save();pop((D.intro==="0"?"🏕️ ¡El viaje comienza!":"🦬 ¡Capítulo "+D.intro+" en marcha!")+" +"+XPI+" XP");closeModal()}
   else if(D.m!==undefined){
     const c=findCard(D.c),i=+D.i,f=c.f[i];
     const st=(S.cards[c.id]=S.cards[c.id]||{v:{}});st.v=st.v||{};let sel=st.v[i]||[];const o=D.m;
@@ -439,6 +501,8 @@ document.addEventListener("click",e=>{
     if(nm.length<3){$("msg").textContent="Escribe tu nombre completo.";return}
     S.name=nm;S.grad=true;save();$("pbody").innerHTML=stHTML(ST[ST.length-1]);pop("🎓 ¡Bisonte Graduado! +"+XPG+" XP");confetti();
   }
+  else if(t.hasAttribute("data-imgs"))openImgs();
+  else if(t.hasAttribute("data-export"))exportHTML();
   else if(t.hasAttribute("data-reset")){if(confirm("¿Borrar todo tu progreso y respuestas?")){S={cards:{},quiz:{},intro:{},grad:false,name:""};save();figIdx=0;drawMap();head();window.scrollTo(0,0)}}
 });
 document.addEventListener("input",e=>{
@@ -452,16 +516,19 @@ let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>
 function completeCard(id){
   const card=findCard(id),st=(S.cards[id]=S.cards[id]||{v:{}});st.v=st.v||{};
   for(let i=0;i<card.f.length;i++){
-    const f=card.f[i],v=st.v[i];
+    const f=card.f[i],v=st.v[i];if(f.opt)continue;
     const bad=f.k==="m"?!(v&&v.length>=f.min):f.k==="c"?!v:!(v&&String(v).trim().length>0);
     if(bad){$("msg").textContent=f.k==="m"?"Elige al menos "+f.min+" opciones.":"Falta completar: "+f.l;return}
   }
+  const before=badgeList().filter(b=>b.g).map(b=>b.n);
   const was=st.done;st.done=true;save();
-  pop(was?"Tarjeta actualizada":"✔ Tarjeta "+id+" completada +"+XPC+" XP");
+  const nb=badgeList().filter(b=>b.g&&!before.includes(b.n));
+  pop(nb.length?"🏅 Nueva insignia: «"+nb[0].n+"»":was?"Tarjeta actualizada":"✔ Tarjeta "+id+" completada +"+XPC+" XP");
+  if(nb.length)confetti();
   closeModal();
 }
 function checkQuiz(n){
-  const ch=C[n-1];let ok=0;
+  const ch=CH(n);let ok=0;
   ch.quiz.forEach((it,qi)=>{
     const sel=document.querySelector(`input[name=q${qi}]:checked`);
     it.o.forEach((_,oi)=>$(`o_${qi}_${oi}`).classList.remove("right","wrong"));
@@ -473,7 +540,8 @@ function checkQuiz(n){
   save();$("msg").textContent=`Acertaste ${ok} de ${ch.quiz.length}. Revisa las respuestas en rojo y vuelve a intentarlo.`;
 }
 
-document.querySelectorAll("img[data-i]").forEach(m=>{m.src=IMG[m.dataset.i]});
+applyImgs();
+document.addEventListener("change",e=>{if(e.target.id==="imgf")loadImgs(e.target.files)});
 $("who").value=S.name||"";
 $("who").addEventListener("input",e=>{S.name=e.target.value;save()});
 new IntersectionObserver(([e])=>$("hud").classList.toggle("on",!e.isIntersecting)).observe($("dash"));
